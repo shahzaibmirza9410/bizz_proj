@@ -1,0 +1,170 @@
+{% extends "bizz/pages/home.html" %}
+{% load static %}
+{% block title %}
+        <title>DrupsInvesting Saved Searches</title>
+		  {% endblock title %}
+ {% block content %}
+ {% block extrahead %}
+<style>
+    #cover-spin {
+    position:fixed;
+    width:100%;
+    left:0;right:0;top:0;bottom:0;
+    background-color: rgba(255,255,255,0.7);
+    z-index:9999;
+    display:none;
+}
+@-webkit-keyframes spin {
+	from {-webkit-transform:rotate(0deg);}
+	to {-webkit-transform:rotate(360deg);}
+}
+
+@keyframes spin {
+	from {transform:rotate(0deg);}
+	to {transform:rotate(360deg);}
+}
+
+#cover-spin::after {
+    content:'';
+    display:block;
+    position:absolute;
+    left:48%;top:40%;
+    width:40px;height:40px;
+    border-style:solid;
+    border-color:blue;
+    border-top-color:transparent;
+    border-width: 4px;
+    border-radius:50%;
+    -webkit-animation: spin .8s linear infinite;
+    animation: spin .8s linear infinite;
+}
+</style>
+		  {% endblock extrahead %}
+<div id="cover-spin"></div>
+        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">Saved Searches</h4>
+                            </div>
+                            <div class="card-body">
+                               <table class="table table-striped " >
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>User</th>
+                                                <th>Email Preference</th>
+                                                <th>Email Active</th>
+                                                <th>Email Frequency Now</th>
+                                                <th>last Email Sent</th>
+                                                <th>Next Email Scheduled</th>
+                                                <th>Filters</th>
+                                                <th colspan="2">Action</th>
+
+                                            </tr>
+
+                                        </thead>
+                                   <tbody>
+                                    {% for list in lists%}
+                                    <tr>
+                                        <td>{{list.name}}</td>
+                                        <td>{{list.user.first_name}} {{list.user.last_name}}</td>
+                                        <td>{{list.email_preference}}</td>
+                                        <td>{% if list.email_active%} <i class="fa fa-check" style="font-size:18px"></i>{%else%}<i class="fa fa-times" style="font-size:18px"></i>{%endif%} </td>
+                                        <td>{% if list.email_frequency %}{{list.email_frequency}}{% else%}-{% endif%}</td>
+                                        <td>{% if list.last_email_sent %}{{list.last_email_sent}}{% else%}-{% endif%}</td>
+                                        <td>{% if list.next_email_date %}{{list.next_email_date}}{% else%}-{% endif%}</td>
+                                        <td>{% for name,val in list.user_filters.items%}
+                                            <span style = "marign:5px;font-size:1vw;"  class="badge badge-info" >{{name}} {{val}}
+                      </span>
+                                        {%endfor%}
+                                        </td>
+                                        <td>
+                                            <a type="button" class="btn btn-primary" href="{% url 'view-list' list.id %}">Open</a></td>
+                                        {% if request.user.is_staff%}
+
+                                        <td>
+                                       <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop{{ forloop.counter }}">
+ Schedule Email
+</button>
+                                        <div class="modal fade" id="staticBackdrop{{ forloop.counter }}" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-xs">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">Schedule Email</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+                            <div class="mb-3 col">
+                        <label for="email_freq{{list.id}}" class="form-label">Email Frequency</label>
+
+                           <select class="form-control" id="email_freq{{list.id}}" aria-label="Default select example">
+                          <option {% if list.email_frequency == 'daily' %} selected {% endif %} value="daily">Daily  </option>
+                          <option {% if list.email_frequency == 'weekly' %} selected {% endif %} value="weekly">Weekly</option>
+                               <option {% if list.email_frequency == 'monthly' %} selected {% endif %} value="monthly">Monthly</option>
+                        </select>
+</div>
+                          <div class="mb-3 col">
+                         <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="ActiveEmail{{list.id}}" {% if list.email_active %} checked {% endif %}>
+                        <label class="form-check-label" for="ActiveEmail{{list.id}}">Activate Email</label>
+
+                        </div>
+                          </div>
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="update_list({{list.id}});">Save</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+
+
+
+                                        </td>
+                                                {% endif %}
+                                    </tr>
+                                   {% endfor%}
+                                   </tbody></table>
+
+ </div>
+ </div>
+ {% endblock content %}
+
+ {% block extra_scripts %}
+<script>
+    function update_list(id){
+    $('#cover-spin').show(0)
+    var name = '#email_freq'+id
+    email_freq =  $(name).val();
+    var name2 = 'ActiveEmail'+id
+     ActiveEmail = document.getElementById(name2).checked;
+    $.ajax({
+            url : "{% url 'update-list' %}",
+            type : "GET",
+            data: {
+                'email_freq': email_freq,
+                'list_id':id,
+                'ActiveEmail':ActiveEmail
+               },
+            dataType: "json",
+            success : function(data) {
+
+            $('#cover-spin').hide(0)
+            if (data['status_code'] == 1)
+            {
+            $('#cover-spin').hide(0)
+            alert("Frequency Updated. Refresh Page to see results");
+             }
+             else {$('#cover-spin').hide(0);
+             alert("Error While Updating Frequency");}
+             },
+            });
+}
+
+
+</script>
+		  {% endblock extra_scripts %}

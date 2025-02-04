@@ -1,0 +1,16 @@
+{% load static %}
+<div style="margin-top:10px;margin-bottom:40px;" class="text-center">
+    <img src="{% static 'staticfiles/images/home-logo-small.png'%}" alt="Logo">
+{% autoescape off %}
+<h3>Hi {{ user.first_name }},</h3>
+<p>Please click on the link below to confirm your registration:</p>
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+
+<p>If clicking the link above doesn't work, please copy and paste the URL in a new browser window instead.</p><br>
+
+<p>IF you have ANY questions please email us at: <b>customerservice@admin.drupsinvesting.com</b></p><br>
+
+<b>Sincerely,</b>
+<p>The BizBuySell Team.</p>
+{% endautoescape %}
+</div>

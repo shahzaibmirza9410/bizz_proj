@@ -1,0 +1,222 @@
+{% load humanize %}
+<br>
+<div class="table-responsive">
+<table id="example2" class="table table-bordered" >
+                                        <thead style="background-color:#c1c1c1">
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Address</th>
+                                                <th>Asking Price</th>
+                                                <th>Cash Flow</th>
+                                                <th>Location</th>
+                                                <th>Category</th>
+                                                <th>Inventory Included</th>
+                                                <th>Real Estate Included</th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for record in records%}
+                                            <tr>
+                                                <td>{% if record.title%}{{ record.title }} {% else %} - {% endif %}</td>
+                                                <td>{% if record.address%}{{ record.address }} {% else %} - {% endif %}</td>
+                                                <td>{% if record.asking_price %}${{ record.asking_price| intcomma }} {% else %} - {% endif %}</td>
+                                                <td>{% if record.cash_flow%}${{ record.cash_flow| intcomma }} {% else %} - {% endif %}</td>
+                                                  <td>{% if record.state and record.county%}{{ record.state|upper }},{{ record.county }}{%else%}{{record.address}} {%endif%} </td>
+                                                  <td>{% if record.category%} {{ record.category }} {% else %} - {% endif %} </td>
+                                                  <td>{% if record.inventory%} <i class="fa fa-check" style="font-size:18px"></i>{%else%}<i class="fa fa-times" style="font-size:18px"></i>{%endif%} </td>
+                                                  <td>{% if record.real_estate%} <i class="fa fa-check" style="font-size:18px"></i>{%else%}<i class="fa fa-times" style="font-size:18px"></i>{%endif%} </td>
+
+                                                <td><button class="btn btn-outline-primary" data-toggle="modal"
+                                                            data-target="#more_info{{ forloop.counter }}">More</button>
+                                                <div id="more_info{{ forloop.counter }}" class="modal fade" role="dialog">
+                                                      <div class="modal-dialog modal-xl  modal-dialog-scrollable">
+                                                        <!-- Modal content-->
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h4 class="modal-title">Details </h4>
+
+                                                                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                             </div>
+                                                             <div class="modal-body ">
+                                                                 <div class="container">
+                                                                 <div><span style="font-size:24px"><strong>{% if record.title%}{{ record.title }} {% else %} - {% endif %}</strong></span>
+                                                                     <span style="font-size:18px;float:right" >{% if record.business_website%}<a type="button" class="btn btn-primary m-2" href="{{record.business_website}}" target=”_blank” >Visit Website</a>{% endif %}<a type="button" class="btn btn-primary " href="{{record.detail_url}}" target=”_blank” >Visit Profile</a></span></div>
+
+                                                                     <p style="font-size:18px">{% if record.reason_of_selling%}<strong>Selling Reason: </strong>{{ record.reason_of_selling }}<br>  {% endif %}
+                                                                     {% if record.category%}<strong>Category: </strong>{{ record.category }}<br> {% endif %}
+                                                                     {% if record.franchise%}<strong>Franchise: </strong>{{ record.franchise }} <br> {% endif %}
+
+                                                                     {% if record.scraped_time%}<span style="font-size:14px"><u>First Seen on: {{ record.scraped_time }}{% endif %}</u></span></p>
+                                                                  <div class="table-responsive">
+                                                                 <table class="table table-striped">
+                                                                     <thead>
+                                                                        <tr>
+                                                                          <th scope="col">Location</th>
+                                                                          <th scope="col">Asking Price</th>
+                                                                          <th scope="col">Gross Revenue</th>
+                                                                          <th scope="col">Age of Business</th>
+                                                                          <th scope="col">Ebitda</th>
+                                                                          <th scope="col">Cashflow</th>
+                                                                          <th scope="col">Established</th>
+
+                                                                          <th scope="col">Employees</th>
+                                                                          <th scope="col">Building Area(sf)</th>
+                                                                          <th scope="col">CashFlow Multiple</th>
+                                                                          <th scope="col">Owned/Leased</th>
+                                                                          <th scope="col">Inventory Included</th>
+                                                                          <th scope="col">RealEstate Included</th>
+                                                                        </tr>
+                                                                      </thead>
+
+                                                                        <tbody><tr>
+                                                                          <td>{% if record.state and record.county%}{{ record.state|upper }},{{ record.county }}{%else%}{{record.address}} {%endif%}</td>
+
+                                                                            {% if record.asking_price%}<td>${{ record.asking_price| intcomma }}  </td> {%else %}<td>N/A</td>{% endif %}
+                                                                            {% if record.gross_revenue%}<td>${{ record.gross_revenue| intcomma }}  </td> {%else %}<td>N/A</td>{% endif %}
+                                                                          {% if record.age_years%}<td>{{ record.age_years }} </td>{%else %}<td>N/A</td>{% endif %}
+                                                                          {% if record.ebitda%}<td>${{ record.ebitda }}</td>{%else %}<td>N/A</td>{% endif %}
+                                                                          {% if record.cash_flow%}<td>${{ record.cash_flow| intcomma }}</td>{%else %}<td>N/A</td>{% endif %}
+                                                                          {% if record.established%}<td>{{ record.established }}</td>{%else %}<td>N/A</td>{% endif %}
+                                                                          {% if record.employees%}<td>{{ record.employees }} </td>{%else %}<td>N/A</td>{% endif %}
+                                                                          {% if record.building_sf%}<td>{{ record.building_sf| intcomma }}</td>{%else %}<td>N/A</td>{% endif %}
+                                                                          {% if record.cash_flow_multiple%}<td>{{ record.cash_flow_multiple| intcomma }}</td>{%else %}<td>N/A</td>{% endif %}
+                                                                          <!--
+                                                                            {% if record.furniture_fixture_equipment%}<td><i class="fa fa-check" style="font-size:18px"></i>{%else%}<i class="fa fa-times" style="font-size:18px"></i></td>{% endif %}-->
+
+
+                                                                            {% if record.real_estate_from_detail%}<td>{{record.real_estate_from_detail}}</td>{%else %}<td>N/A</td>{% endif %}
+                                                                         <td>{% if record.inventory%} <i class="fa fa-check" style="font-size:18px"></i>{%else%}<i class="fa fa-times" style="font-size:18px"></i>{%endif%} </td>
+                                                                            <td>{% if record.real_estate%} <i class="fa fa-check" style="font-size:18px"></i>{%else%}<i class="fa fa-times" style="font-size:18px"></i>{%endif%} </td>
+                                                                                                        <br>
+                                                                      </tr></tbody>
+                                                                 </table>
+                                                                </div>
+                                                                  {% if record.facilities%}
+                                                                      <p style="font-size:18px" class="text-justify"><strong>Facilities: </strong></p>
+                                                                  <p style="font-size:14px ;" class="p-1 text-justify">{{ record.facilities }} </p>
+                                                                    {% endif %}
+                                                                      {% if record.competition%}
+                                                                      <p style="font-size:18px" class="text-justify"><strong>Competition: </strong></p>
+                                                                  <p style="font-size:14px ;" class="p-1 text-justify ">{{ record.competition }} </p>
+                                                                    {% endif %}
+                                                                  <p style="font-size:18px" class="text-justify"><strong>Description: </strong></p>
+                                                                  <p style="font-size:14px ;" class="p-1 text-justify">{% if record.description%}{{ record.description }} {% else %} -{% endif %}</p>
+
+                                                                 </div></div>
+                                                          <div class="modal-footer">
+                                                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                </td>
+
+                                            </tr>
+                                        <!--
+                                        <tr>
+                                                                          <td colspan="9">{% if record.description%}{{ record.description|slice:":255" }}{% else %}no descriotion {% endif %}</td>
+                                                                      </tr>
+                                        <td colspan="9"></td>-->
+                                        {%empty%}
+                                        <tr>
+                                            <td>No Data Found</td>
+                                         </tr>
+
+                                    {% endfor %}
+
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                 <th>Title</th>
+                                                <th>Address</th>
+                                                <th>Asking Price</th>
+                                                <th>Cash Flow</th>
+                                                <th>Location</th>
+                                                <th>Category</th>
+                                                <th>Inventory Included</th>
+                                                <th>Real Estate Included</th>
+                                                <th></th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+</div>
+    <button type="button" class="btn btn-primary" style="float:right" data-toggle="modal" data-target="#staticBackdrop2">
+                                      Save Search
+                                    </button>
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="staticBackdrop2" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                                      <div class="modal-dialog" style="max-width: 40%;">
+                                        <div class="modal-content">
+                                          <div class="modal-header">
+                                            <h5 class="modal-title" id="staticBackdropLabel2">Save Search</h5>
+                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                              <span aria-hidden="true">&times;</span>
+                                            </button>
+                                          </div>
+                                          <div class="modal-body">
+                                              <div class="card-title" id="tags2"></div>
+                                            <br>
+                                              <div class="mb-3">
+                                               <label  for="list_name">List Name</label>
+                                                  <input type="text"  class="form-control" id="list_name">
+
+                                              </div>
+                                              <h5 class="card-title">Email notification preferences</h5>
+
+                                                   <div class="mb-3">
+                                                <select class="form-control" id="email_pref" aria-label="Default select example">
+                                                  <option selected value="daily">Daily</option>
+                                                  <option value="weekly">Weekly</option>
+                                                  <option value="monthly">Monthly</option>
+                                                  </select>
+                                              </div>
+                                            <br>
+                                                 <div class="mb-3 form-check">
+                                                <input type="checkbox" class="form-check-input" id="InstantAlerts">
+                                                <label class="form-check-label" for="InstantAlerts">Instant Alerts</label>
+                                              </div>
+                                          </div>
+                                          <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                            <button type="button" class="btn btn-primary" onclick="save_search()">Save Search</button>
+                                          </div>
+                                        </div>
+                                      </div>
+                                    </div>
+
+                                    <a class="btn btn-primary" style="float:right;margin-right:3px;" href="{% url 'create_download_file' %}">Download</a>
+
+
+  <nav>
+      <ul class="pagination">
+        {% if records.has_previous %}
+        <li class="page-item">
+          <a class="page-link"  onclick="paging_history({{records.previous_page_number }})" >
+             Previous
+          </a>
+        </li>
+        {% endif %}
+
+
+{% for n in records.paginator.page_range %}
+  {% if records.number == n %}
+    <li class="page-item active">
+      <span class="page-link">{{ n }}<span class="sr-only">(current)</span></span>
+    </li>
+  {% elif n > records.number|add:'-7' and n < records.number|add:'7' %}
+    <li class="page-item"><a class="page-link" onclick="paging_history({{ n }})">{{ n }}</a></li>
+  {% endif %}
+{% endfor %}
+
+        {% if records.has_next %}
+        <li class="page-item">
+          <a class="page-link"  onclick="paging_history({{records.next_page_number }})"  >
+            Next
+          </a>
+        </li>
+        {% endif %}
+          <li class="page-item"><span class="page-link">Page {{records.number}} of {{num_pages}}</span></li>
+      </ul>
+    </nav>

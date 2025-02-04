@@ -1,0 +1,706 @@
+{% extends "bizz/pages/home.html" %}
+{% load crispy_forms_tags %}
+{% load static %}
+{% block title %}
+        <title>DrupsInvesting Table</title>
+		  {% endblock title %}
+ {% block content %}
+ {% block extrahead %}
+<style>
+    #cover-spin {
+    position:fixed;
+    width:100%;
+    left:0;right:0;top:0;bottom:0;
+    background-color: rgba(255,255,255,0.7);
+    z-index:9999;
+    display:none;
+}
+@-webkit-keyframes spin {
+	from {-webkit-transform:rotate(0deg);}
+	to {-webkit-transform:rotate(360deg);}
+}
+
+@keyframes spin {
+	from {transform:rotate(0deg);}
+	to {transform:rotate(360deg);}
+}
+
+#cover-spin::after {
+    content:'';
+    display:block;
+    position:absolute;
+    left:48%;top:40%;
+    width:40px;height:40px;
+    border-style:solid;
+    border-color:blue;
+    border-top-color:transparent;
+    border-width: 4px;
+    border-radius:50%;
+    -webkit-animation: spin .8s linear infinite;
+    animation: spin .8s linear infinite;
+}
+</style>
+<!--
+<link href="{% static 'vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">-->
+		  {% endblock extrahead %}
+<div class="container">
+    <div id="cover-spin"></div>
+    <div class="container-fluid">
+  <form>
+      <div class="row">
+    <div class="form-group col-xs-3 col-md-3">
+        <label for="keywords" class="control-label">Keyword(s)</label>
+         <div class="input-group mb-3">
+                      <input type="text" class="form-control" id="keywords" autocomplete="on" placeholder="e.g: FedEx,Relocatable" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" onclick="add_keyword()">Add</button>
+                      </div>
+                    </div>
+    </div>
+    <div class="form-group col-xs-2 col-md-2">
+        <label for="buz_category" class="form-label">Business Categories</label>
+                        <select class="form-control" id="buz_category" name="buz_category" aria-label="Default select example">
+                          <option value = "all" selected="selected">All</option>
+                          {% for key,value in BusinessCategories.items %}
+                            <option value = {{value}}>{{key}}</option>
+                            {% endfor %}
+                        </select>
+    </div>
+    <div class="form-group col-xs-2 col-md-2">
+         <label for="state" class="form-label">State</label>
+                          <select class="form-control selectpicker" title="Choose multiple options"  multiple data-selected-text-format="count" data-live-search="true" aria-label="Default select example" id="state">
+                              {% for state in states%}
+                          {% for key,value in state.items%}
+                          {% if value%}
+                            <option value = "{{value}}">{{value}}</option>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </select>
+    </div>
+          <div class="form-group col-xs-2 col-md-2">
+       <label for="county" class="form-label">County</label>
+                          <select class="form-control selectpicker" title="Choose multiple options" multiple data-selected-text-format="count" data-live-search="true" aria-label="Default select example" id="county">
+                            {% for county in counties%}
+                          {% for key,value in county.items%}
+                          {% if value%}
+                            <option value = "{{value}}">{{value}}</option>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </select>
+    </div>
+
+      <div class="form-group col-xs-3 col-md-3"><br>
+          <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+ More Filters
+</button>
+<button class="btn btn-primary " onclick="apply_filter();">Apply</button>
+
+      </div>
+</div>
+</form>
+</div>
+ <div class="row">
+     <div class="col-4">
+         <div class="card">
+            <div class="card-header">
+                <h4 class="card-title">Filters</h4>
+            </div>
+            <div class="card-body">
+                      <label for="keywords" class="form-label">Keyword(s)</label>
+                    <div class="input-group mb-3">
+                      <input type="text" class="form-control" id="keywords" autocomplete="on" placeholder="e.g: FedEx,Relocatable" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" onclick="add_keyword()">Add</button>
+                      </div>
+                    </div>
+                    <div id="keywords_tags">
+                      </div><br>
+
+                    <div class="mb-3">
+                        <label for="buz_category" class="form-label">Business Categories</label>
+                        <select class="form-control" id="buz_category" name="buz_category" aria-label="Default select example">
+                          <option value = "all" selected="selected">All</option>
+                          {% for key,value in BusinessCategories.items %}
+                            <option value = {{value}}>{{key}}</option>
+                            {% endfor %}
+                        </select>
+                      </div>
+
+                          <label for="state" class="form-label">State</label>
+                          <select class="form-control selectpicker" title="Choose multiple options"  multiple data-selected-text-format="count" data-live-search="true" aria-label="Default select example" id="state">
+                              {% for state in states%}
+                          {% for key,value in state.items%}
+                          {% if value%}
+                            <option value = "{{value}}">{{value}}</option>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </select><br><br>
+                 <label for="county" class="form-label">County</label>
+                          <select class="form-control selectpicker" title="Choose multiple options" multiple data-selected-text-format="count" data-live-search="true" aria-label="Default select example" id="county">
+                            {% for county in counties%}
+                          {% for key,value in county.items%}
+                          {% if value%}
+                            <option value = "{{value}}">{{value}}</option>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </select><br><br>
+
+                    <!-- Button trigger modal -->
+<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+ More Filters
+</button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">More Filters</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+
+                          <div class="row">
+                    <div class="mb-3 col">
+                        <label for="gross_min" class="form-label">Gross Revenue</label>
+                        <div class="row">
+                        <div class="col">
+                           <select class="form-control" id="gross_min" aria-label="Default select example">
+                          <option selected value="">Min  </option>
+                          <option value="50000">$50,000</option>
+                          <option value="100000">$100,000</option>
+                          <option value="150000">$150,000</option>
+                          <option value="200000">$200,000</option>
+                          <option value="250000">$250,000</option>
+                          <option value="300000">$300,000</option>
+                          <option value="500000">$500,000</option>
+                          <option value="750000">$750,000</option>
+                          <option value="1000000">$1,000,000</option>
+                          <option value="2000000">$2,000,000</option>
+                          <option value="3000000">$3,000,000</option>
+                        </select></div>
+                           To
+                        <div class="col">
+                           <select class="form-control" id="gross_max" aria-label="Default select example">
+                          <option selected value="">Max</option>
+                          <option value="50000">$50,000</option>
+                          <option value="100000">$100,000</option>
+                          <option value="150000">$150,000</option>
+                          <option value="200000">$200,000</option>
+                          <option value="250000">$250,000</option>
+                          <option value="300000">$300,000</option>
+                          <option value="500000">$500,000</option>
+                          <option value="750000">$750,000</option>
+                          <option value="1000000">$1,000,000</option>
+                          <option value="2000000">$2,000,000</option>
+                          <option value="3000000">$3,000,000</option>
+                        </select>
+                            </div>
+                            </div>
+                      </div>
+
+                    <div class="mb-3 col">
+
+                        <label for="cash_min" class="form-label">Cash Flow</label>
+                        <div class="row">
+                        <div class="col">
+                           <select class="form-control" id="cash_min" aria-label="Default select example">
+                          <option selected value="">Min  </option>
+                          <option value="50000">$50,000</option>
+                          <option value="100000">$100,000</option>
+                          <option value="150000">$150,000</option>
+                          <option value="200000">$200,000</option>
+                          <option value="250000">$250,000</option>
+                          <option value="300000">$300,000</option>
+                          <option value="500000">$500,000</option>
+                          <option value="750000">$750,000</option>
+                          <option value="1000000">$1,000,000</option>
+                          <option value="2000000">$2,000,000</option>
+                          <option value="3000000">$3,000,000</option>
+                        </select></div>
+                           To
+                        <div class="col">
+                           <select class="form-control" id="cash_max" aria-label="Default select example">
+                          <option selected value="">Max</option>
+                          <option value="50000">$50,000</option>
+                          <option value="100000">$100,000</option>
+                          <option value="150000">$150,000</option>
+                          <option value="200000">$200,000</option>
+                          <option value="250000">$250,000</option>
+                          <option value="300000">$300,000</option>
+                          <option value="500000">$500,000</option>
+                          <option value="750000">$750,000</option>
+                          <option value="1000000">$1,000,000</option>
+                          <option value="2000000">$2,000,000</option>
+                          <option value="3000000">$3,000,000</option>
+                        </select>
+                            </div>
+                            </div>
+                      </div>
+                              </div>
+                    <div class="row">
+                    <div class="mb-3 col">
+                        <label for="ebita_min" class="form-label">Ebitda</label>
+                        <div class="row">
+                        <div class="col">
+
+                           <select class="form-control" id="ebita_min" aria-label="Default select example">
+                          <option selected value="">Min  </option>
+                          <option value="50000">$50,000</option>
+                          <option value="100000">$100,000</option>
+                          <option value="150000">$150,000</option>
+                          <option value="200000">$200,000</option>
+                          <option value="250000">$250,000</option>
+                          <option value="300000">$300,000</option>
+                          <option value="500000">$500,000</option>
+                          <option value="750000">$750,000</option>
+                        </select></div>
+                           To
+                        <div class="col">
+                           <select class="form-control" id="ebita_max" aria-label="Default select example">
+                          <option selected value="">Max  </option>
+                         <option value="50000">$50,000</option>
+                          <option value="100000">$100,000</option>
+                          <option value="150000">$150,000</option>
+                          <option value="200000">$200,000</option>
+                          <option value="250000">$250,000</option>
+                          <option value="300000">$300,000</option>
+                          <option value="500000">$500,000</option>
+                          <option value="750000">$750,000</option>
+                        </select>
+                            </div>
+                            </div>
+                      </div>
+                    <div class="mb-3 col">
+
+                        <label for="No_Emp_min" class="form-label">No of Employees</label>
+                        <div class="row">
+                        <div class="col">
+                           <select class="form-control" id="No_Emp_min" aria-label="Default select example">
+
+                            <option selected value="">Min  </option>
+                          <option value="10">10</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                          <option value="500">500</option>
+                          <option value="1000">1000</option>
+                          <option value="3000">3000</option>
+                          <option value="5000">5000</option>
+                        </select></div>
+                           To
+                        <div class="col">
+                           <select class="form-control" id="No_Emp_max" aria-label="Default select example">
+                          <option selected value="">Max</option>
+                          <option value="10">10</option>
+                          <option value="50">50</option>
+                          <option value="100">100</option>
+                          <option value="500">500</option>
+                          <option value="1000">1000</option>
+                          <option value="3000">3000</option>
+                          <option value="5000">5000</option>
+                        </select>
+                            </div>
+                            </div>
+                      </div>
+                        </div>
+                          <div class="row">
+                    <div class="mb-3 col">
+
+                        <label for="askingprice_min" class="form-label">Asking Price</label>
+                        <div class="row">
+                        <div class="col">
+                           <select class="form-control" id="askingprice_min" aria-label="Default select example">
+                          <option selected value="">Min  </option>
+                          <option value="50000">$50,000</option>
+                          <option value="100000">$100,000</option>
+                          <option value="150000">$150,000</option>
+                          <option value="200000">$200,000</option>
+                          <option value="250000">$250,000</option>
+                          <option value="300000">$300,000</option>
+                          <option value="500000">$500,000</option>
+                          <option value="750000">$750,000</option>
+                          <option value="1000000">$1,000,000</option>
+                          <option value="2000000">$2,000,000</option>
+                          <option value="3000000">$3,000,000</option>
+                        </select></div>
+                           To
+                        <div class="col">
+                           <select class="form-control" id="askingprice_max" aria-label="Default select example">
+                          <option selected value="">Max  </option>
+                               <option value="50000">$50,000</option>
+                          <option value="100000">$100,000</option>
+                          <option value="150000">$150,000</option>
+                          <option value="200000">$200,000</option>
+                          <option value="250000">$250,000</option>
+                          <option value="300000">$300,000</option>
+                          <option value="500000">$500,000</option>
+                          <option value="750000">$750,000</option>
+                          <option value="1000000">$1,000,000</option>
+                          <option value="2000000">$2,000,000</option>
+                          <option value="3000000">$3,000,000</option>
+                        </select>
+                            </div>
+                            </div>
+                      </div>
+                    <div class="mb-3 col">
+
+                        <label for="building_area_min" class="form-label">Building Area (sqft)</label>
+                        <div class="row">
+                        <div class="col">
+                           <select class="form-control" id="building_area_min" aria-label="Default select example">
+                          <option selected value="">Min  </option>
+                            <option value="500">500</option>
+                            <option value="1000">1000</option>
+                            <option value="5000">5000</option>
+                            <option value="10000">10000</option>
+                          <option value="100000">100,000</option>
+                          <option value="150000">150,000</option>
+                          <option value="200000">200,000</option>
+                          <option value="250000">250,000</option>
+                        </select></div>
+                           To
+                        <div class="col">
+                           <select class="form-control" id="building_area_max" aria-label="Default select example">
+                          <option selected value="">Max  </option>
+                                <option value="500">500</option>
+                            <option value="1000">1000</option>
+                            <option value="5000">5000</option>
+                            <option value="10000">10000</option>
+                          <option value="100000">100,000</option>
+                          <option value="150000">150,000</option>
+                          <option value="200000">200,000</option>
+                          <option value="250000">250,000</option>
+                        </select>
+                            </div>
+                            </div>
+                      </div>
+                              </div>
+                    <div class="row">
+                            <div class="mb-3 col">
+                        <label for="retire_reason" class="form-label">Reason of Selling</label>
+                        <input type="text" class="form-control" id="retire_reason">
+                      </div>
+
+                            <div class="mb-3 col">
+                        <label for="age_of_business" class="form-label">Age of Business (years)</label>
+                        <input type="number" class="form-control" id="age_of_business">
+                      </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col">
+                        <label for="date-from" class="form-label">Date Range</label>
+                        <input type="datetime-local" class="form-control" id="date-from" aria-describedby="emailHelp">
+                        <label for="date-to" class="form-label">To</label>
+                        <input type="datetime-local" class="form-control" id="date-to" aria-describedby="emailHelp">
+                      </div>
+                        <div class="mb-3 col">
+                      <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="InventoryIncluded">
+                        <label class="form-check-label" for="InventoryIncluded">Inventory Included</label>
+                      </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="RSIncluded">
+                        <label class="form-check-label" for="RSIncluded">Real Estate Included</label>
+                      </div>
+
+                    </div>
+
+                        </div>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="apply_filter();">Apply</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                      <button class="btn btn-primary "  style="float:right" onclick="apply_filter();">Apply Filter</button>
+
+
+      </div>
+          </div>
+     </div>
+                    <div class="col-8">
+
+                        <div class="card">
+                            <div class="card-title" style="float:left;padding:2vw" id="tags"></div>
+
+                            <div class="card-body">
+                                <div id="filtered_record_div" class="overflow-auto">
+                                    <table id="example2" class="table table-bordered" style="width:100%" >
+                                        <thead style="background-color:#c1c1c1">
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Address</th>
+                                                <th>Asking_price</th>
+                                                <th>Gross Revenue</th>
+                                                <th>Location</th>
+                                                <th>Details</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td colspan="6">Nothing to show yet.</td>
+                                            </tr>
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <th>Title</th>
+                                                <th>Address</th>
+                                                <th>Asking_price</th>
+                                                <th>Gross Revenue</th>
+                                                <th>Location</th>
+                                                <th>Details</th>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+ </div>
+
+</div>
+ {% endblock content %}
+ {% block extra_scripts %}
+<!--
+ <script src="{% static 'vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/plugins-init/datatables.init.js' %}"></script>
+    -->
+<script>
+    $('#state').selectpicker();
+    $('#county').selectpicker();
+
+</script>
+<script>
+var tags2;
+function del_keyword_tag(keyword_tag){
+    $(keyword_tag).remove();
+
+}
+function add_keyword(){
+        name = $("#keywords").val();
+        value = $("#keywords").val();
+        value = value.replace(' ','-');
+        keyword_tag = "keyword_tag_"+value
+        input_val = "input_val_"+value
+        myhtml = `
+          <span id = `+keyword_tag+`  style= "font-size:18px;" class="badge badge-light"><span name="keyword_tags">`+name+`</span>
+                      <button type="button" onclick="del_keyword_tag('#`+keyword_tag+`')" class="close mr-1 ml-1 pl-2" style="color:red" aria-label="Close">
+                                <span aria-hidden="true">&times;</span></button></span>
+
+                                `
+            innerhtml = $("#keywords_tags").html();
+            $("#keywords_tags").html(innerhtml+myhtml);
+
+
+}
+
+
+function generic_add_tag(value,tag_name,title)
+   {
+         myhtml = `
+          <span style = "marign:5px;font-size:1vw;" id = "` +tag_name+`" class="badge badge-info" >` +title+value+`
+                      </span>`
+
+            innerhtml = $("#tags").html();
+            $("#tags").html(innerhtml+myhtml);
+            tags2 =  tags2+myhtml
+
+}
+
+function clear_all_filters(){
+$("#tags").html(`<p><span style="font-size:18px"> Filters Applied:</span></p>`);
+
+inputs = ['gross_min','gross_max','cash_min','cash_max','ebita_min',
+    'ebita_max','No_Emp_min','No_Emp_max','askingprice_min','askingprice_max',
+    'building_area_min','building_area_max','retire_reason','age_of_business',
+    ]
+    for (i = 0; i < inputs.length; i++) {
+    name="#"+inputs[i]
+    $(name).val('');
+    }
+    $('.selectpicker').selectpicker('val', '');
+    $('.selectpicker').selectpicker('refresh');
+    $("#keywords_tags").html('');
+    $('#InventoryIncluded').prop('checked', false);
+    $('#RSIncluded').prop('checked', false);
+}
+
+function get_inputs(){
+    inputs = ['buz_category','gross_min','gross_max','cash_min','cash_max','ebita_min',
+    'ebita_max','No_Emp_min','No_Emp_max','askingprice_min','askingprice_max',
+    'building_area_min','building_area_max','retire_reason','age_of_business','date-from','date-to'
+    ]
+    const titles =
+    {
+    'buz_category':'Business Category: ',
+    'gross_min':'Gross Min: ',
+    'gross_max':'Gross Max: ',
+    'cash_min':'CashFlow (Min): ',
+    'cash_max':'CashFlow (Max): ',
+    'ebita_min':'Ebitda(Min):',
+    'ebita_max':'Ebitda(Max): ',
+    'No_Emp_min':'No. of Employees(Min): ',
+    'No_Emp_max':'No. of Employees(Max): '
+    ,'askingprice_min':'AskingPrice(Min): ',
+    'askingprice_max':'AskingPrice(Max): ',
+    'building_area_min':'Building Area(Min): ',
+    'building_area_max':'Building Area(Max): ',
+    'state':'State: ',
+    'county':'County: ',
+    'retire_reason':'Selling Reason: ',
+    'InventoryIncluded':'InventoryIncluded: ',
+    'RSIncluded':'Real Estate Included: ',
+    'age_of_business' : 'Age of Business: ',
+    'date-from':'Date Range From: ',
+    'date-to':'Date Range to: ',
+    };
+    $("#tags").html("");
+    $("#tags").html(`<p><span style="font-size:18px"> Filters Applied:</span><a type="button" style='float:right;color: red;' onclick='clear_all_filters();'><i class="fas fa-trash"></i> Clear All</a></p>`);
+    tags2 = `<p><span style="font-size:18px"> Filters Applied:</span></p>`
+    var input_values = {}
+    for (i = 0; i < inputs.length; i++) {
+        input_values[inputs[i]] = document.getElementById(inputs[i]).value;
+        value = document.getElementById(inputs[i]).value
+        if (value != ''){
+        tag_id= '#' + inputs[i]+"_tag";
+        var title = titles[inputs[i]]
+        //console.log('fieldid '+field_id+'tag: ' +tag_id+'value: '+value+'title: '+title);
+        generic_add_tag(value,tag_id,title);
+    }}
+    checkboxes = ['InventoryIncluded','RSIncluded']
+
+    for (i = 0; i < checkboxes.length; i++) {
+        input_values[checkboxes[i]] = document.getElementById(checkboxes[i]).checked;
+        value = document.getElementById(checkboxes[i]).checked;
+        if (document.getElementById(checkboxes[i]).checked){
+        tag_id= '#' + checkboxes[i]+"_tag";
+        var title = titles[checkboxes[i]]
+        //console.log('fieldid '+field_id+'tag: ' +tag_id+'value: '+value+'title: '+title);
+        generic_add_tag(value,tag_id,title);}
+
+    }
+      var f2 = function(){
+   var values=Array.from($("#state").find(':selected')).map(function(item){
+      return $(item).text();
+   });
+   console.log(values);
+   if(values.length){
+   input_values['state']= values
+   tag_id= '#' +"state_tag";
+   generic_add_tag(values,tag_id,'States:');
+   }
+    }
+
+       var f3 = function(){
+   var values=Array.from($("#county").find(':selected')).map(function(item){
+      return $(item).text();
+   });
+   console.log(values);
+   if(values.length){
+   input_values['county']= values
+   tag_id= '#' +"county_tag";
+   generic_add_tag(values,tag_id,'counties:');
+    }}
+f2();
+f3();
+
+    const my_keywords = [];
+    vals = document.querySelectorAll('[name="keyword_tags"]');
+    console.log(vals);
+    for (i = 0; i < vals.length; i++) {
+
+    my_keywords.push(vals[i].textContent);
+    }
+    if(my_keywords.length){
+        tag_id= '#' +"keywords_tag";
+        generic_add_tag(my_keywords,tag_id,'Keywords:');
+        }
+    input_values['keywords']= my_keywords
+
+    console.log(input_values)
+    return input_values
+
+}
+
+function apply_filter(){
+    filters = get_inputs()
+    $('#cover-spin').show(0)
+    var filtersstr = JSON.stringify(filters);
+    $.ajax({
+            url : "{% url 'get-records' %}",
+            type : "GET",
+            data: {
+                 'filters': filtersstr,
+               },
+            dataType: "json",
+            success : function(data) {
+            $('#cover-spin').hide(0)
+            if (data['status_code'] == 1)
+            {
+
+             $("#filtered_record_div").html(data['response']);
+             myhtml = $("#tags").html();
+            innerhtml = $("#tags2").html();
+            $("#tags2").html(innerhtml+tags2);
+             }
+             else {alert("Error While loading records");}
+             },
+            });
+
+}
+
+
+
+function send_email(){
+    $('#cover-spin').show(0)
+    $.ajax({
+            url : "{% url 'send-email' %}",
+            type : "GET",
+            data: {
+               },
+            dataType: "json",
+            success : function(data) {
+
+            $('#cover-spin').hide(0)
+            if (data['status_code'] == 1)
+            {
+            $('#cover-spin').hide(0)
+            alert("Email send");
+             }
+             else {$('#cover-spin').hide(0);
+             alert("Error While Sending Email");}
+             },
+            });
+}
+
+function paging_history(id){
+        filters = get_inputs()
+    $('#cover-spin').show(0)
+    var filtersstr = JSON.stringify(filters);
+       $(function () {
+           $.ajax({
+               url: '{% url 'get-records' %}',
+               data: {
+                 'page': id,
+                 'filters':filtersstr,
+               },
+               dataType: 'json',
+               success: function (data) {
+                    $('#cover-spin').hide(0)
+                    $("#filtered_record_div").html(data['response']);
+               }
+             });
+           });
+   }
+</script>
+		  {% endblock extra_scripts %}

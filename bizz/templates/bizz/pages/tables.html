@@ -1,0 +1,686 @@
+{% extends "bizz/pages/home.html" %}
+{% load crispy_forms_tags %}
+{% load humanize %}
+{% load static %}
+{% block title %}
+        <title>DrupsInvesting Records</title>
+		  {% endblock title %}
+ {% block content %}
+ {% block extrahead %}
+<style>
+    #cover-spin {
+    position:fixed;
+    width:100%;
+    left:0;right:0;top:0;bottom:0;
+    background-color: rgba(255,255,255,0.7);
+    z-index:9999;
+    display:none;
+}
+@-webkit-keyframes spin {
+	from {-webkit-transform:rotate(0deg);}
+	to {-webkit-transform:rotate(360deg);}
+}
+
+@keyframes spin {
+	from {transform:rotate(0deg);}
+	to {transform:rotate(360deg);}
+}
+
+#cover-spin::after {
+    content:'';
+    display:block;
+    position:absolute;
+    left:48%;top:40%;
+    width:40px;height:40px;
+    border-style:solid;
+    border-color:blue;
+    border-top-color:transparent;
+    border-width: 4px;
+    border-radius:50%;
+    -webkit-animation: spin .8s linear infinite;
+    animation: spin .8s linear infinite;
+}
+</style>
+<style>
+
+.autocomplete-wrapper {
+
+
+    #query-results {
+      display: none;
+      color:black;
+      position: absolute;
+      top: 80px;
+      left: -1px;
+      right: -1px;
+      border: solid 1px #CCC;
+      min-height: 100px;
+      max-height: 300px;
+      overflow: scroll;
+      list-style: none;
+      padding: 10px;
+      background-color:white;
+
+      li {
+        padding: 5px;
+        margin: 0;
+        font-size: 15px;
+
+        &:hover {
+          background: #c1c1c1;
+          cursor: pointer;
+        }
+      }
+    }
+}
+</style>
+<!--
+<link href="{% static 'vendor/datatables/css/jquery.dataTables.min.css' %}" rel="stylesheet">-->
+		  {% endblock extrahead %}
+    <div id="cover-spin"></div>
+    <div class="container-fluid">
+         <div class="card">
+
+            <div class="card-body">
+
+      <div class="row">
+    <div class="form-group col-xs-3 col-md-3">
+        <label for="keywords" class="control-label">Keyword(s)</label>
+         <div class="input-group mb-3">
+                      <input type="text" class="form-control" id="keywords" autocomplete="on" placeholder="e.g: FedEx,Relocatable" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" onclick="add_keyword()">Add</button>
+                      </div>
+                    </div>
+        <div id="keywords_tags">
+                      </div>
+    </div>
+    <div class="form-group col-xs-3 col-md-3">
+        <label for="buz_category" class="form-label">Business Categories</label>
+                        <select class="form-control" id="buz_category" name="buz_category" aria-label="Default select example">
+                          <option value = ""  disabled selected="selected">Choose a Category</option>
+                            {% for category in categories%}
+                          {% for key,value in category.items%}
+                          {% if value%}
+                            <option value = "{{value}}">{{value}}</option>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </select>
+    </div>
+    <div class="form-group col-xs-3 col-md-3">
+        <!--
+        <label for="state" class="form-label">State</label>
+                          <select class="form-control selectpicker" title="Choose multiple options"  multiple data-selected-text-format="count" data-live-search="true" aria-label="Default select example" id="state">
+                              {% for state in states%}
+                          {% for key,value in state.items%}
+                          {% if value%}
+                            <option value = "{{value}}">{{value}}</option>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </select>
+                        -->
+        <label for="query">Location</label>
+        <div class="autocomplete-wrapper">
+            <input type="text" class="form-control" id="query" autocomplete="off" placeholder="Select city, county & state">
+            <ul id="query-results"></ul>
+        </div>
+    </div>
+
+
+      <div class="form-group col-xs-3 col-md-3"><br>
+         <!-- <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#staticBackdrop">
+ More
+</button>-->
+          <button type="button" class="btn btn-primary" data-toggle="collapse" data-target=".multi-collapse" aria-expanded="false" aria-controls="multiCollapseExample1">
+ More
+</button>
+<button class="btn btn-primary " onclick="clear_all_filters();">Clear</button>
+<button class="btn btn-primary " onclick="apply_filter();">Apply</button>
+
+      </div>
+</div>
+
+            </div>
+         </div>
+    <div class="collapse multi-collapse" id="multiCollapseExample1">
+      <div class="card card-body">
+
+
+                          <div class="row">
+                    <div class="mb-3 col">
+                        <label for="gross_min" class="form-label">Gross Revenue</label>
+                        <div class="row">
+                        <div class="col">
+                          <!--
+                           <select class="form-control" id="gross_min" aria-label="Default select example">
+                          <option selected value="">Min  </option>
+                          <option value="50000">$50,000</option>
+                          <option value="100000">$100,000</option>
+                          <option value="150000">$150,000</option>
+                          <option value="200000">$200,000</option>
+                          <option value="250000">$250,000</option>
+                          <option value="300000">$300,000</option>
+                          <option value="500000">$500,000</option>
+                          <option value="750000">$750,000</option>
+                          <option value="1000000">$1,000,000</option>
+                          <option value="2000000">$2,000,000</option>
+                          <option value="3000000">$3,000,000</option>
+                        </select>
+                        -->
+                            <input list="datalistOptions1" class="form-control" id="gross_min" placeholder="Min"/></label>
+
+                        </div>
+                           To
+                        <div class="col">
+                           <input list="datalistOptions1" class="form-control" id="gross_max" placeholder="Max"/></label>
+
+                            </div>
+                            <datalist id="datalistOptions1">
+                          <option value="$50,000"></option>
+                          <option value="$100,000"></option>
+                          <option value="$150,000"></option>
+                          <option value="$200,000"></option>
+                          <option value="$250,000"></option>
+                          <option value="$300,000"></option>
+                          <option value="$500,000"></option>
+                          <option value="$750,000"></option>
+                          <option value="$1,000,000"></option>
+                          <option value="$2,000,000"></option>
+                          <option value="$3,000,000"></option>
+                            </datalist>
+                            </div>
+                      </div>
+
+                    <div class="mb-3 col">
+
+                        <label for="cash_min" class="form-label">Cash Flow</label>
+                        <div class="row">
+                        <div class="col">
+                        <input list="datalistOptions2" class="form-control" id="cash_min" placeholder="Min"/></label>
+
+                        </div>
+                           To
+                        <div class="col">
+                           <input list="datalistOptions2" class="form-control" id="cash_max" placeholder="Max"/></label>
+
+                            </div>
+                            <datalist id="datalistOptions2">
+                          <option value="$50,000"></option>
+                          <option value="$100,000"></option>
+                          <option value="$150,000"></option>
+                          <option value="$200,000"></option>
+                          <option value="$250,000"></option>
+                          <option value="$300,000"></option>
+                          <option value="$500,000"></option>
+                          <option value="$750,000"></option>
+                          <option value="$1,000,000"></option>
+                          <option value="$2,000,000"></option>
+                          <option value="$3,000,000"></option>
+                            </datalist>
+                            </div>
+                      </div>
+                              </div>
+                    <div class="row">
+                    <div class="mb-3 col">
+                        <label for="ebita_min" class="form-label">Ebitda</label>
+                        <div class="row">
+                        <div class="col">
+                     <input list="datalistOptions3" class="form-control" id="ebita_min" placeholder="Min"/></label>
+                        </div>
+                           To
+                        <div class="col">
+                     <input list="datalistOptions3" class="form-control" id="ebita_max" placeholder="Max"/></label>
+                           </div>
+                            <datalist id="datalistOptions3">
+                          <option selected value="">Min  </option>
+                          <option value="$50,000"></option>
+                          <option value="$100,000"></option>
+                          <option value="$150,000"></option>
+                          <option value="$200,000"></option>
+                          <option value="$250,000"></option>
+                          <option value="$300,000"></option>
+                          <option value="$500,000"></option>
+                          <option value="$750,000"></option>
+                            </datalist>
+                            </div>
+                      </div>
+                    <div class="mb-3 col">
+
+                        <label for="No_Emp_min" class="form-label">No of Employees</label>
+                        <div class="row">
+                        <div class="col">
+                            <input list="datalistOptions4" class="form-control" id="No_Emp_min" placeholder="Min"/></label>
+                           </div>
+                           To
+                        <div class="col">
+                             <input list="datalistOptions4" class="form-control" id="No_Emp_max" placeholder="Max"/></label>
+
+                            </div>
+                               <datalist id="datalistOptions4">
+                           <option value="10"></option>
+                          <option value="50"></option>
+                          <option value="100"></option>
+                          <option value="500"></option>
+                          <option value="1000"></option>
+                          <option value="3000"></option>
+                          <option value="5000"></option>
+                            </datalist>
+                            </div>
+                      </div>
+                        </div>
+                          <div class="row">
+                    <div class="mb-3 col">
+
+                        <label for="askingprice_min" class="form-label">Asking Price</label>
+                        <div class="row">
+                        <div class="col">
+                         <input list="datalistOptions5" class="form-control" id="askingprice_min" placeholder="Min"/></label>
+                        </div>
+                           To
+                        <div class="col">
+                         <input list="datalistOptions5" class="form-control" id="askingprice_max" placeholder="Max"/></label>
+
+                            </div>
+                               <datalist id="datalistOptions5">
+                          <option value="$50,000"></option>
+                          <option value="$100,000"></option>
+                          <option value="$150,000"></option>
+                          <option value="$200,000"></option>
+                          <option value="$250,000"></option>
+                          <option value="$300,000"></option>
+                          <option value="$500,000"></option>
+                          <option value="$750,000"></option>
+                          <option value="$1,000,000"></option>
+                          <option value="$2,000,000"></option>
+                          <option value="$3,000,000"></option>
+                            </datalist>
+                            </div>
+                      </div>
+                    <div class="mb-3 col">
+
+                        <label for="building_area_min" class="form-label">Building Area (sqft)</label>
+                        <div class="row">
+                        <div class="col">
+                         <input list="datalistOptions6" class="form-control" id="building_area_min" placeholder="Min"/></label>
+
+                         </div>
+                           To
+                        <div class="col">
+                            <input list="datalistOptions6" class="form-control" id="building_area_max" placeholder="Max"/></label>
+
+                            </div>
+                            <datalist id="datalistOptions6">
+                          <option value="500"></option>
+                            <option value="1,000"></option>
+                            <option value="5,000"></option>
+                            <option value="10,000"></option>
+                          <option value="100,000"></option>
+                          <option value="150,000"></option>
+                          <option value="200,000"></option>
+                          <option value="250,000"></option>
+                            </datalist>
+                            </div>
+                      </div>
+                              </div>
+                    <div class="row">
+                            <div class="mb-3 col">
+                        <label for="retire_reason" class="form-label">Reason of Selling</label>
+                        <input type="text" class="form-control" id="retire_reason">
+                      </div>
+
+                            <div class="mb-3 col">
+                        <label for="age_of_business" class="form-label">Age of Business (years)</label>
+                        <input type="number" class="form-control" id="age_of_business">
+                      </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="mb-3 col">
+                        <label for="date-from" class="form-label">Date Range</label>
+                        <input type="datetime-local" class="form-control" id="date-from" aria-describedby="emailHelp">
+                        <label for="date-to" class="form-label">To</label>
+                        <input type="datetime-local" class="form-control" id="date-to" aria-describedby="emailHelp">
+                      </div>
+                        <div class="mb-3 col">
+                      <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="InventoryIncluded">
+                        <label class="form-check-label" for="InventoryIncluded">Inventory Included</label>
+                      </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="RSIncluded">
+                        <label class="form-check-label" for="RSIncluded">Real Estate Included</label>
+                      </div>
+
+                    </div>
+
+                        </div>
+
+      </div>
+    </div>
+    </div>
+
+
+    <!-- Modal -->
+                <div class="modal fade" id="staticBackdrop" data-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" aria-hidden="true">
+                  <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h5 class="modal-title" id="staticBackdropLabel">More Filters</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">&times;</span>
+                        </button>
+                      </div>
+                      <div class="modal-body">
+
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" onclick="apply_filter();">Apply</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+<div class="container">
+    <div id="filtered_record_div">
+        {{response}}
+    </div>
+</div>
+
+ {% endblock content %}
+ {% block extra_scripts %}
+<!--
+ <script src="{% static 'vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/plugins-init/datatables.init.js' %}"></script>
+    -->
+<script>
+
+
+var tags2;
+function del_keyword_tag(keyword_tag){
+    $(keyword_tag).remove();
+
+}
+function add_keyword(){
+        name = $("#keywords").val();
+        value = $("#keywords").val();
+        value = value.replace(' ','-');
+        keyword_tag = "keyword_tag_"+value
+        input_val = "input_val_"+value
+        myhtml = `
+          <span id = `+keyword_tag+`  style= "font-size:18px;" class="badge badge-light"><span name="keyword_tags">`+name+`</span>
+                      <button type="button" onclick="del_keyword_tag('#`+keyword_tag+`')" class="close mr-1 ml-1 pl-2" style="color:red" aria-label="Close">
+                                <span aria-hidden="true">&times;</span></button></span>
+
+                                `
+            innerhtml = $("#keywords_tags").html();
+            $("#keywords_tags").html(innerhtml+myhtml);
+
+
+}
+
+
+function generic_add_tag(value,tag_name,title)
+   {
+         myhtml = `
+          <span style = "marign:5px;font-size:1vw;" id = "` +tag_name+`" class="badge badge-info" >` +title+value+`
+                      </span>`
+
+            innerhtml = $("#tags2").html();
+            $("#tags2").html(innerhtml+myhtml);
+            tags2 =  tags2+myhtml
+
+}
+
+function clear_all_filters(){
+$("#tags2").html(`<p><span style="font-size:18px"> Filters Applied:</span></p>`);
+
+inputs = ['gross_min','gross_max','cash_min','cash_max','ebita_min',
+    'ebita_max','No_Emp_min','No_Emp_max','askingprice_min','askingprice_max',
+    'building_area_min','building_area_max','retire_reason','age_of_business',
+    'buz_category','query']
+    for (i = 0; i < inputs.length; i++) {
+    name="#"+inputs[i]
+    $(name).val('');
+    }
+    $('.selectpicker').selectpicker('val', '');
+    $('.selectpicker').selectpicker('refresh');
+    $("#keywords_tags").html('');
+    $('#InventoryIncluded').prop('checked', false);
+    $('#RSIncluded').prop('checked', false);
+}
+var save_searches = {}
+function get_inputs(){
+    inputs = ['buz_category','gross_min','gross_max','cash_min','cash_max','ebita_min',
+    'ebita_max','No_Emp_min','No_Emp_max','askingprice_min','askingprice_max',
+    'building_area_min','building_area_max','retire_reason','age_of_business','date-from','date-to','query'
+    ]
+    const titles =
+    {
+    'buz_category':'Business Category: ',
+    'gross_min':'Gross Min: ',
+    'gross_max':'Gross Max: ',
+    'cash_min':'CashFlow (Min): ',
+    'cash_max':'CashFlow (Max): ',
+    'ebita_min':'Ebitda(Min):',
+    'ebita_max':'Ebitda(Max): ',
+    'No_Emp_min':'No. of Employees(Min): ',
+    'No_Emp_max':'No. of Employees(Max): '
+    ,'askingprice_min':'AskingPrice(Min): ',
+    'askingprice_max':'AskingPrice(Max): ',
+    'building_area_min':'Building Area(Min): ',
+    'building_area_max':'Building Area(Max): ',
+    'query':'Location: ',
+    'retire_reason':'Selling Reason: ',
+    'InventoryIncluded':'InventoryIncluded: ',
+    'RSIncluded':'Real Estate Included: ',
+    'age_of_business' : 'Age of Business: ',
+    'date-from':'Date Range From: ',
+    'date-to':'Date Range to: ',
+    };
+    $("#tags2").html("");
+    $("#tags2").html(`<p><span style="font-size:18px"> Filters Applied:</span><a type="button" style='float:right;color: red;' onclick='clear_all_filters();'><i class="fas fa-trash"></i> Clear All</a></p>`);
+    tags2 = `<p><span style="font-size:18px"> Filters Applied:</span></p>`
+    var input_values = {}
+    for (i = 0; i < inputs.length; i++) {
+        input_values[inputs[i]] = document.getElementById(inputs[i]).value;
+        value = document.getElementById(inputs[i]).value
+        if (value != ''){
+        tag_id= '#' + inputs[i]+"_tag";
+        var title = titles[inputs[i]]
+        //console.log('fieldid '+field_id+'tag: ' +tag_id+'value: '+value+'title: '+title);
+        generic_add_tag(value,tag_id,title);
+        save_searches[title]=value;
+    }}
+    checkboxes = ['InventoryIncluded','RSIncluded']
+
+    for (i = 0; i < checkboxes.length; i++) {
+        input_values[checkboxes[i]] = document.getElementById(checkboxes[i]).checked;
+        value = document.getElementById(checkboxes[i]).checked;
+        if (document.getElementById(checkboxes[i]).checked){
+        tag_id= '#' + checkboxes[i]+"_tag";
+        var title = titles[checkboxes[i]]
+        //console.log('fieldid '+field_id+'tag: ' +tag_id+'value: '+value+'title: '+title);
+        generic_add_tag(value,tag_id,title);
+        save_searches[title]=value;
+        }
+
+    }
+      var f2 = function(){
+   var values=Array.from($("#state").find(':selected')).map(function(item){
+      return $(item).text();
+   });
+   console.log(values);
+   if(values.length){
+   input_values['state']= values
+   tag_id= '#' +"state_tag";
+   generic_add_tag(values,tag_id,'States:');
+   save_searches["state"]=values;
+   }
+    }
+
+       var f3 = function(){
+   var values=Array.from($("#county").find(':selected')).map(function(item){
+      return $(item).text();
+   });
+   console.log(values);
+   if(values.length){
+   input_values['county']= values
+   tag_id= '#' +"county_tag";
+   generic_add_tag(values,tag_id,'counties:');
+    save_searches["county"]=values;
+    }}
+f2();
+f3();
+
+    const my_keywords = [];
+    vals = document.querySelectorAll('[name="keyword_tags"]');
+    console.log(vals);
+    for (i = 0; i < vals.length; i++) {
+
+    my_keywords.push(vals[i].textContent);
+    }
+    if(my_keywords.length){
+        tag_id= '#' +"keywords_tag";
+        generic_add_tag(my_keywords,tag_id,'Keywords:');
+save_searches["keywords"]=my_keywords;
+        }
+
+        input_values['keywords']= my_keywords
+    console.log(input_values)
+    return input_values
+
+}
+
+function apply_filter(){
+    filters = get_inputs()
+    $('#cover-spin').show(0)
+    var filtersstr = JSON.stringify(filters);
+    $.ajax({
+            url : "{% url 'get-records' %}",
+            type : "GET",
+            data: {
+                 'filters': filtersstr,
+               },
+            dataType: "json",
+            success : function(data) {
+            $('#cover-spin').hide(0)
+            if (data['status_code'] == 1)
+            {
+
+             $("#filtered_record_div").html(data['response']);
+             myhtml = $("#tags").html();
+            innerhtml = $("#tags2").html();
+            $("#tags2").html(innerhtml+tags2);
+             }
+             else {alert("Error While loading records");}
+             },
+            });
+
+}
+
+
+function save_search(){
+    list_name =  $('#list_name').val();
+    filters2 = get_inputs()
+    if(list_name){
+        $('#cover-spin').show(0)
+
+        var filtersstr = JSON.stringify(save_searches);
+        var filtersstr2 = JSON.stringify(filters2);
+        console.log(filters2);
+        console.log(filtersstr);
+        email_preference =  $('#email_pref').val();
+        list_name =  $('#list_name').val();
+        instant_alerts = 'true';
+        $.ajax({
+                url : "{% url 'save-search' %}",
+                type : "GET",
+                data: {
+                    'filters': filtersstr2,
+                    'user_filters': filtersstr,
+                    'email_preference':email_preference,
+                    'instant_alerts':instant_alerts,
+                    'list_name':list_name,
+                   },
+                dataType: "json",
+                success : function(data) {
+
+                $('#cover-spin').hide(0)
+                if (data['status_code'] == 1)
+                {
+                $('#cover-spin').hide(0)
+                alert("Email send");
+                 }
+                 else {$('#cover-spin').hide(0);
+                 alert("Error While Sending Email");}
+                 },
+                });
+                }
+    else{
+    alert("Please provide list name");
+    }
+}
+
+function paging_history(id){
+        filters = get_inputs()
+    $('#cover-spin').show(0)
+    var filtersstr = JSON.stringify(filters);
+       $(function () {
+           $.ajax({
+               url: '{% url 'get-records' %}',
+               data: {
+                 'page': id,
+                 'filters':filtersstr,
+               },
+               dataType: 'json',
+               success: function (data) {
+                    $('#cover-spin').hide(0)
+                    $("#filtered_record_div").html(data['response']);
+               }
+             });
+           });
+   }
+</script>
+<script>
+
+
+var arr = {{locations|safe}};
+console.log(arr);
+$('#query').on({
+	"focus": function() {
+  	$(this).parent().css('border-color', '#CCCCCC');
+  },
+  "blur": function() {
+  	$(this).parent().css('border-color', '#EEEEEE');
+  },
+  "keyup": function() {
+  	var results = [];
+		var val = $(this).val();
+    var $queryResults = $('#query-results');
+    var queryResultsMarkup = "";
+
+    if (val.length > 1) {
+    		$queryResults.html("").hide();
+    		$.each(arr, function(i) {
+        		if (arr[i].match(new RegExp(val,'i'))) {
+            		var $li = $('<li/>')
+                		.html(arr[i])
+                    .attr('data-value', arr[i]);
+                $queryResults.append($li).show();
+            }
+        });
+
+        $('li').on('click', function() {
+            var selectedVal = $(this).attr('data-value');
+            $('#query').val(selectedVal);
+            $('#query-results').html("").hide();
+        });
+    } else {
+    		$queryResults.html("").hide();
+    }
+  }
+});
+</script>
+		  {% endblock extra_scripts %}

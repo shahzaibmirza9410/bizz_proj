@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>New Search Saved</title>
+
+    <!-- Start Common CSS -->
+    <style type="text/css">
+        #outlook a {
+            padding: 0;
+        }
+
+        body {
+            width: 100% !important;
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Helvetica, arial, sans-serif;
+        }
+
+        .ExternalClass {
+            width: 100%;
+        }
+
+        .ExternalClass, .ExternalClass p, .ExternalClass span, .ExternalClass font, .ExternalClass td, .ExternalClass div {
+            line-height: 100%;
+        }
+
+        .backgroundTable {
+            margin: 0;
+            padding: 0;
+            width: 100% !important;
+            line-height: 100% !important;
+        }
+
+        .main-temp table {
+            border-collapse: collapse;
+            mso-table-lspace: 0pt;
+            mso-table-rspace: 0pt;
+            font-family: Helvetica, arial, sans-serif;
+        }
+
+        .main-temp table td {
+            border-collapse: collapse;
+        }
+    </style>
+    <!-- End Common CSS -->
+</head>
+<body>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" class="backgroundTable main-temp"
+       style="background-color: #d5d5d5;padding-top: 20px;padding-bottom: 20px;">
+    <tbody>
+    <tr>
+        <td>
+            <table width="600" align="center" cellpadding="15" cellspacing="0" border="0" class="devicewidth"
+                   style="background-color: #ffffff;">
+                <tbody>
+                <!-- Start header Section -->
+                <tr>
+                    <td style="padding-top: 50px;">
+                        <table width="560" align="center" cellpadding="0" cellspacing="0" border="0"
+                               class="devicewidthinner" style="border-bottom: 1px solid #eeeeee; text-align: center;">
+                            <tbody>
+                            <tr>
+                                <td style="padding-bottom: 10px;">
+                                     <a href="http://104.131.69.232:8000/"><img
+                                            src="http://104.131.69.232:8000/static/staticfiles/images/home-logo-small.png" alt="DrupsInvesting"
+                                            width="59" height="57"/></a>
+                                </td>
+                            </tr>
+                            <tr>
+
+                                <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666;">DrupsInvesting
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 14px; line-height: 18px; color: #666666;padding-bottom: 15px;">
+                                    customerservice@admin.drupsinvesting.com
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <!-- End header Section -->
+                                                  <!-- Start Order Section -->
+
+                                <tr>
+                                    <td style="padding-top: 0;">
+                                        <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #bbbbbb;">
+                                            <tbody>
+                                                           <tr>
+                                                    <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 10px;">
+                                                        Customer Info:
+                                                    </td>
+                                                </tr>
+                                                                                  <tr>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575; width: 440px;">
+                                                        <strong>Name:</strong> {{customer|title}}
+                                                    </td>
+
+                                                    <td style="width: 130px;"></td>
+                                                </tr>
+
+                                             <tr>
+ <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 10px;">
+
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!-- End Order Section -->
+                             <!-- Start Order Section -->
+
+                                <tr>
+                                    <td style="padding-top: 0;">
+                                        <table width="560" align="center" cellpadding="0" cellspacing="0" border="0" class="devicewidthinner" style="border-bottom: 1px solid #bbbbbb;">
+                                            <tbody>
+                                                           <tr>
+                                                    <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 10px;">
+                                                        Filters:
+                                                    </td>
+                                                </tr>
+                                                                                  <tr>
+                                                    <td style="font-size: 14px; line-height: 18px; color: #757575; width: 440px;">
+                                                        {% for key,val in filters.items%}
+                                                      <span style = "marign:5px;font-size:1vw;"  class="badge badge-info" >{{key}}: {{val}};
+                                                                  </span>
+                                                        {% endfor%}
+                                                            </td>
+
+                                                    <td style="width: 130px;"></td>
+                                                </tr>
+
+                                             <tr>
+ <td style="width: 55%; font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 10px;">
+
+                                                    </td>
+
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </td>
+                                </tr>
+                                <!-- End Order Section -->
+
+                <tr>
+                    <td style="padding: 0 10px;">
+                        <table width="560" align="center" cellpadding="0" cellspacing="0" border="0"
+                               class="devicewidthinner">
+                            <tbody>
+                            <tr>
+                                <td colspan="2"
+                                    style="font-size: 16px; font-weight: bold; color: #666666; padding-bottom: 5px;">
+                                    STATUS: SAVED
+                                </td>
+                            </tr>
+                            <tr>
+                                                    <td style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; ">
+                                                        To view search results:
+                                                    </td>
+                                                    <td style="width: 80%; font-size: 14px; line-height: 18px; color: #666666; padding-top: 10px;">
+                                                        <button type="button" onclick="window.open('http://104.131.69.232:8000/list/view/{{list_id}}')" class="btn btn primary">view results</button>
+                                                    </td>
+
+
+                                                </tr>
+                            <tr style="width: 55%; font-size: 14px; line-height: 18px; color: #666666; ">If above link doesnot work copy and paste this in your browser: http://104.131.69.232:8000/list/view/{{list_id}}</tr>
+                            <tr>
+                                <td style="width: 100%; font-size: 14px; line-height: 30px; color: #666666;">
+
+                                    If you have any questions please email us at: <b>customerservice@admin.drupsinvesting.com</b>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="center"
+                                    style="width: 45%; font-size: 14px; line-height: 18px; color: #666666; padding-bottom: 10px;">
+                                    Thanks for using our services.
+                                </td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                <!-- End payment method Section -->
+                </tbody>
+            </table>
+        </td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>

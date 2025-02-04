@@ -1,0 +1,29 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+    {% block title %}
+<title>Signup</title>
+    {% endblock title %}
+
+{% block page_name %}
+   SignUP Page
+{% endblock%}
+
+{% block detail %}
+   Register from here to access.
+{% endblock%}
+
+{% block form %}
+      <div style="margin-top: -0px">
+      <h4>2 MORE NEXT STEPS!</h4>
+    <h5 style="color: red">*Very important</h5><br>
+    <p>1. Please <b>check your email</b>  For Security purposes we must verify your email address. <b>Check your SPAM FOLDER</b> if you did not get the mail in your <b>INBOX</b></p>
+
+    <p>2. <b>Click the Link in the EMAIL</b> to Complete the registration!</p>
+    <p>Thank you !</p>
+<p>BizBuySell</p>
+
+<p>You can contact us via email <a href="CustomerService@admin.drupsinvesting.com">CustomerService@admin.drupsinvesting.com</a></p>
+      </div>
+{% endblock %}

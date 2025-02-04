@@ -1,0 +1,67 @@
+{% extends "bizz/pages/home.html" %}
+{% load static %}
+{% block title %}
+        <title>DrupsInvesting Dashboard</title>
+		  {% endblock title %}
+ {% block content %}
+ <div class="row">
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card">
+                            <div class="stat-widget-two card-body">
+                                <div class="stat-content">
+                                    <div class="stat-text">Total Listing Scraped </div>
+                                    <div class="stat-digit"> {% if script.total_listing_scrapped%}{{script.total_listing_scrapped}}{%else%}-{%endif%}</div>
+                                </div>
+                                <!--
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-success w-85" role="progressbar" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card">
+                            <div class="stat-widget-two card-body">
+                                <div class="stat-content">
+                                    <div class="stat-text">New Listings <br>(within past 7 days)</div>
+                                    <div class="stat-digit">{% if script.new_listing_scrapped%}{{script.new_listing_scrapped}}{%else%}-{%endif%}</div>
+                                </div>
+                                <!--
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-primary w-75" role="progressbar" aria-valuenow="78" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card">
+                            <div class="stat-widget-two card-body">
+                                <div class="stat-content">
+                                    <div class="stat-text">Old Listing deleted</div>
+                                    <div class="stat-digit">{% if script.old_listing_deleted%}{{script.old_listing_deleted}}{%else%}-{%endif%}</div>
+                                </div>
+                                    <!--
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-warning w-50" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card">
+                            <div class="stat-widget-two card-body">
+                                <div class="stat-content">
+                                    <div class="stat-text">No of Filters</div>
+                                    <div class="stat-digit">120</div>
+                                </div>
+                                <div class="progress">
+                                    <div class="progress-bar progress-bar-danger w-65" role="progressbar" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /# card -->
+                    </div>
+                    <!-- /# column -->
+                </div>
+
+ {% endblock content %}

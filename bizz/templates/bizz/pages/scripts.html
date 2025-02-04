@@ -1,0 +1,315 @@
+{% extends "bizz/pages/home.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}
+        <title>DrupsInvesting Scripts</title>
+		  {% endblock title %}
+ {% block content %}
+ {% block extrahead %}
+ <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    {{ form.media }}
+<link rel="stylesheet" href="{% static 'DataTables/datatables.min.css' %}">
+		  {% endblock extrahead %}
+ <div class="row">
+     <div class="col-12">
+         <div class="card">
+                            <div class="card-header">
+                                <div class="row">
+                                <div class="col-9">
+                                    <ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab == 'active-scripts-tab' %} active {% endif %}"  aria-current="page" href="{% url 'scripts' 'active-scripts-tab' %}">Active Scripts</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link {% if active_tab == 'history-tab' %} active {% endif %}" href="{% url 'scripts' 'history-tab' %}">History</a>
+  </li>
+</ul>
+
+                                </div>
+                                    <div class="col-3">
+                                        <div style="float-right">
+                                    <!-- Modal --><button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalLongTitle3">
+                                                      Add New Script
+                                                    </button>
+                                                    <div class="modal fade" id="exampleModalLongTitle3" tabindex="-1" aria-labelledby="exampleModalLongTitle3" aria-hidden="true">
+                                                      <div class="modal-dialog  modal-lg  modal-dialog-scrollable">
+                                                        <div class="modal-content">
+                                                          <div class="modal-header">
+                                                            <h5 class="modal-title">Details</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                              <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                          </div>
+                                                          <div class="modal-body">
+                                                            <div class="container">
+                                                                <form method="post" action="{% url 'scripts' 'active-scripts-tab' %}" id="add_script_form">
+                                                                    {% csrf_token %}
+                                                                 {{ form.title|as_crispy_field }}
+
+
+                                                                    {{ form.short_description|as_crispy_field }}
+                                                                    <div class="form-row">
+                                                                  <div class="form-group col-md-6 mb-0">
+                                                                     {{ form.schedule_active|as_crispy_field }}
+                                                                  </div>
+                                                                  <div id="schedule_frequency" class="form-group col-md-6 mb-0">
+                                                                        {{ form.schedule_frequency|as_crispy_field }}
+                                                                  </div>
+                                                               </div>
+                                                                     <div id="once" >
+                                                                    {{ form.schedule_once|as_crispy_field }}
+                                                                     </div>
+                                                                    <div id="days" >
+                                                                            {{ form.schedule_day|as_crispy_field }}
+                                                                    </div >
+                                                                    <div id='month_days'>
+                                                                        {{ form.monthly_dates|as_crispy_field }}</div>
+
+
+                                                                </form>
+
+                                                            </div>
+                                                          </div>
+                                                          <div class="modal-footer">
+                                                            <button type="button" id="add_script" class="btn btn-primary" >Save</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                            <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModalCenter">Config <i class="fas fa-edit"></i></button></h3>
+    <div class="modal fade" id="exampleModalCenter" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                      <div class="modal-dialog  modal-lg  modal-dialog-scrollable">
+                                                        <div class="modal-content">
+                                                          <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLongTitle2">Edit Settings</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                              <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                          </div>
+                                                          <div class="modal-body">
+                                                            <div class="container">
+
+                                                                <form method="post" action="{% url 'settings' %}" id="settings_form">
+                                                                    {% csrf_token %}
+                                                                    <div class="form-row">
+                                                                      <div class="form-group col-md-6 mb-0">
+                                                                         {{ config_form.user|as_crispy_field }}
+                                                                      </div>
+                                                                      <div class="form-group col-md-6 mb-0">
+                                                                         {{ config_form.password|as_crispy_field }}
+                                                                      </div>
+                                                                   </div>
+                                                                    <div class="form-row">
+                                                                      <div class="form-group col-md-6 mb-0">
+                                                                         {{ config_form.host|as_crispy_field }}
+                                                                      </div>
+                                                                      <div class="form-group col-md-6 mb-0">
+                                                                         {{ config_form.port|as_crispy_field }}
+                                                                      </div>
+                                                                   </div>
+                                                                    <div class="form-row">
+                                                                      <div class="form-group col-md-6 mb-0">
+                                                                         {{ config_form.db_name|as_crispy_field }}
+                                                                      </div>
+                                                                      <div class="form-group col-md-6 mb-0">
+                                                                         {{ config_form.url|as_crispy_field }}
+                                                                      </div>
+                                                                   </div>
+
+                                                                </form>
+
+                                                            </div>
+                                                          </div>
+                                                          <div class="modal-footer">
+                                                            <button type="button" id="submit_btn" class="btn btn-primary" >Update</button>
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+
+                                </div>
+
+                                </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                {% if messages %}
+                                 {% for message in messages %}
+                                 <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                   {{ message }}
+                                   <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                     <span aria-hidden="true">&times;</span>
+                                   </button>
+                                 </div>
+                                 {% endfor %}
+                             {% endif %}
+
+                                    <table class="table table-striped " id="myTable">
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Short Decription</th>
+                                                <th>Status</th>
+                                                <th>Scheduled</th>
+                                                <th>Last Run Date</th>
+                                                <th class="d-flex justify-content-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for script in scripts %}
+                                            <tr>
+                                                <td>{{script.title}}</td>
+                                                <td>{{script.short_description}}</td>
+                                                <td >{%if script.status%}<span class="badge badge-info" style="font-size:14px">{{script.status}}</span>{% else%}-{%endif%}</td>
+                                                <td> {% if script.schedule_active%}{{script.schedule_frequency}}{%if script.schedule_frequency == 'once'%} ({{script.schedule_once}}){% endif%}{%if script.schedule_frequency == 'weekly'%} ({{script.schedule_day}}){% endif%}{%if script.schedule_frequency == 'monthly'%} ({{script.monthly_dates}}){% endif%}{%else%}-{%endif%}</td>
+                                                <td>{% if script.last_run_date%}{{script.last_run_date}}{%else%}-{%endif%}</td>
+
+                                                 <td>
+                                                     <button type="button" class="btn btn-secondary" data-toggle="modal" data-target="#exampleModalCenter{{ forloop.counter }}">
+                                                      More
+                                                    </button>
+
+                                                    <!-- Modal -->
+                                                    <div class="modal fade" id="exampleModalCenter{{ forloop.counter }}" tabindex="-1" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                                                      <div class="modal-dialog  modal-xl  modal-dialog-scrollable">
+                                                        <div class="modal-content">
+                                                          <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLongTitle">Details</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                              <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                          </div>
+                                                          <div class="modal-body">
+                                                            <div class="container">
+                                                                <h3><strong>{{script.title}}</strong><a type="button" class="btn btn-primary m-2" style="float:right" href="" target=”_blank” >Visit Website</a></h3>
+                                                                <h6>Last Run Date: {{script.last_run_date}} </h6><br>
+                                                                <table class="table table-striped">
+                                                                    <thead>
+                                                                    <tr>
+                                                                        <th>
+                                                                        Total Listing Scraped
+                                                                        </th>
+                                                                    <th>
+                                                                        New Listing Found (Last 7 Days)
+                                                                    </th>
+                                                                    <th>
+                                                                        Old Listing Deleted
+                                                                    </th>
+                                                                    <th>
+                                                                        Frequency
+                                                                    </th>
+
+                                                                    </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                    <tr>
+
+                                                                        <td>{% if script.total_listing_scrapped%}{{script.total_listing_scrapped}}{%else%}-{%endif%}</td>
+                                                                        <td>{% if script.new_listing_scrapped%}{{script.new_listing_scrapped}}{%else%}-{%endif%}</td>
+                                                                        <td>{% if script.old_listing_deleted%}{{script.old_listing_deleted}}{%else%}-{%endif%}</td>
+                                                                         <td>{% if script.schedule_active%}{{script.schedule_frequency}}{%if script.schedule_frequency == 'once'%} ({{script.schedule_once}}){% endif%}{%if script.schedule_frequency == 'weekly'%} ({{script.schedule_day}}){% endif%}{%if script.schedule_frequency == 'monthly'%} ({{script.monthly_dates}}){% endif%}{%else%}-{%endif%}</td>
+
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td></td>
+                                                                    </tr>
+
+                                                                    </tbody>
+                                                                </table>
+                                                                <h6><Strong>Fields Scraped:<br></Strong></h6>
+                                                                        <p style="text-align: justify;">{{script.fields_scraped}}</p>
+
+                                                            </div>
+                                                          </div>
+                                                          <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                          </div>
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                    <a type="button" href="{% url 'update-script' script.id %}" class="btn btn-secondary" >
+                                                     <i class="fas fa-edit">
+                                                    </i></a>
+                                               <!-- Button trigger modal -->
+                                                    <a type="button" class="btn btn-danger"  href="{% url 'script-delete' script.id %}" >
+                                                       <i class="fas fa-trash">
+                                                       </i></a></td>
+
+                                            </tr>
+{% endfor %}
+                                        </tbody>
+                                    </table>
+                            </div>
+         </div>
+     </div>
+ </div>
+ {% endblock content %}
+ {% block extra_scripts %}
+ <script src="{% static 'vendor/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script src="{% static 'js/plugins-init/datatables.init.js' %}"></script>
+<script type="text/javascript" src="{% static 'DataTables/datatables.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'DataTables/moment.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'DataTables/datatables.min.js' %}" ></script>
+<script type="text/javascript" src="{% static 'DataTables/datetime-moment.js' %}"></script>
+<script>
+    $(document).ready(function() {
+$('#days').hide();
+$('#month_days').hide();
+$('#schedule_frequency').hide();
+$('#once').hide();
+});
+$('input[type=radio]').change(function() {
+    if (this.value == 'True') {
+        $('#schedule_frequency').show();
+    }
+    else if (this.value == 'False') {
+        $('#schedule_frequency').hide();
+        document.getElementById('days').style.display = 'none'
+  document.getElementById('month_days').style.display = 'none'
+  document.getElementById('once').style.display = 'none'
+    }
+});
+
+$('#add_script').click(function(){
+  document.getElementById("add_script_form").submit();
+});
+    document.getElementById("id_schedule_frequency").addEventListener("change", myFunction);
+function myFunction() {
+console.log("here");
+  var x = document.getElementById("id_schedule_frequency");
+  if (x.value =='daily'){
+  document.getElementById('days').style.display = 'none'
+  document.getElementById('month_days').style.display = 'none'
+  document.getElementById('once').style.display = 'none'
+  }
+  if (x.value =='once'){
+  document.getElementById('days').style.display = 'none'
+  document.getElementById('month_days').style.display = 'none'
+  document.getElementById('once').style.display = 'block'
+  }
+  if (x.value =='weekly'){
+  document.getElementById('days').style.display = 'block'
+  document.getElementById('month_days').style.display = 'none'
+  document.getElementById('once').style.display = 'none'
+
+  }
+  if (x.value =='monthly'){
+  document.getElementById('days').style.display = 'none'
+  document.getElementById('month_days').style.display = 'block'
+  document.getElementById('once').style.display = 'none'
+
+
+  }
+}
+
+</script>
+<script>
+    $(document).ready( function () {
+     $('#myTable').DataTable();
+
+});
+</script>
+
+		  {% endblock extra_scripts %}

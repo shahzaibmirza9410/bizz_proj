@@ -1,0 +1,15 @@
+{% extends 'accounts/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+
+    {% block title %}
+<title>Email Verification</title>
+    {% endblock title %}
+
+{% block page_name %}
+   Email Verification
+{% endblock%}
+
+{% block form %}
+  <p>For security purposes, your email must be verified. An Email has been sent to the Email Address you entered. Please check your email system to confirm your email address.  Just click the link to complete the registration.  If the email is not there please check your spam folder. </p>
+{% endblock %}
