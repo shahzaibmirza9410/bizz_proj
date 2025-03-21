@@ -45,6 +45,7 @@
 
                                                                      <p style="font-size:18px">{% if record.reason_of_selling%}<strong>Selling Reason: </strong>{{ record.reason_of_selling }}<br>  {% endif %}
                                                                      {% if record.category%}<strong>Category: </strong>{{ record.category }}<br> {% endif %}
+                                                                     {% if record.image_url%}<strong>Image URL: </strong>{{ record.image_url }}<br> {% endif %}
                                                                      {% if record.franchise%}<strong>Franchise: </strong>{{ record.franchise }} <br> {% endif %}
 
                                                                      {% if record.scraped_time%}<span style="font-size:14px"><u>First Seen on: {{ record.scraped_time }}{% endif %}</u></span></p>
@@ -66,6 +67,10 @@
                                                                           <th scope="col">Owned/Leased</th>
                                                                           <th scope="col">Inventory Included</th>
                                                                           <th scope="col">RealEstate Included</th>
+                                                                          <th scope="col">Rent</th>
+                                                                          <th scope="col">Inventory Price</th>
+                                                                          <th scope="col">Lease Expiration Date</th>
+                                                                          <th scope="col">Listing Type</th>
                                                                         </tr>
                                                                       </thead>
 
@@ -88,6 +93,10 @@
                                                                             {% if record.real_estate_from_detail%}<td>{{record.real_estate_from_detail}}</td>{%else %}<td>N/A</td>{% endif %}
                                                                          <td>{% if record.inventory%} <i class="fa fa-check" style="font-size:18px"></i>{%else%}<i class="fa fa-times" style="font-size:18px"></i>{%endif%} </td>
                                                                             <td>{% if record.real_estate%} <i class="fa fa-check" style="font-size:18px"></i>{%else%}<i class="fa fa-times" style="font-size:18px"></i>{%endif%} </td>
+                                                                            {% if record.rent%}<td>${{ record.rent| intcomma }}</td>{%else %}<td>N/A</td>{% endif %}
+                                                                            {% if record.inventory_price%}<td>${{ record.inventory_price| intcomma }}</td>{%else %}<td>N/A</td>{% endif %}
+                                                                            {% if record.lease_expiration_date%}<td>{{ record.lease_expiration_date| intcomma }}</td>{%else %}<td>N/A</td>{% endif %}
+                                                                            {% if record.listing_type%}<td>{{ record.listing_type }}</td>{%else %}<td>N/A</td>{% endif %}
                                                                                                         <br>
                                                                       </tr></tbody>
                                                                  </table>

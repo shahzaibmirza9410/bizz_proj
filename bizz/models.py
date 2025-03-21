@@ -83,6 +83,8 @@ class Scraped_data(models.Model):
     lease_expiration_date = models.DateTimeField(blank=True, null=True)
     inventory_price = models.IntegerField(blank=True, null=True)
     rent = models.IntegerField(blank=True, null=True)
+    listing_type = models.CharField(max_length=255, blank=True, null=True)
+    image_url = models.TextField(blank=True, null=True)
 
 
 class UserManager(BaseUserManager):
@@ -237,6 +239,8 @@ class Archives(models.Model):
     lease_expiration_date = models.DateTimeField(blank=True, null=True)
     inventory_price = models.IntegerField(blank=True, null=True)
     rent = models.IntegerField(blank=True, null=True)
+    listing_type = models.CharField(max_length=255, blank=True, null=True)
+    image_url = models.TextField(blank=True, null=True)
 
 
 class History(models.Model):

@@ -222,6 +222,70 @@
                             </div>
                       </div>
                               </div>
+
+
+          <div class="row">
+                    <div class="mb-3 col">
+                        <label for="gross_min" class="form-label">Inventory Price</label>
+                        <div class="row">
+                        <div class="col">
+                            <input list="datalistOptions1" class="form-control" id="inventory_price_gte" placeholder="Min"/></label>
+
+                        </div>
+                           To
+                        <div class="col">
+                           <input list="datalistOptions1" class="form-control" id="inventory_price_lte" placeholder="Max"/></label>
+
+                            </div>
+                            <datalist id="datalistOptionsinventory">
+                          <option value="$50,000"></option>
+                          <option value="$100,000"></option>
+                          <option value="$150,000"></option>
+                          <option value="$200,000"></option>
+                          <option value="$250,000"></option>
+                          <option value="$300,000"></option>
+                          <option value="$500,000"></option>
+                          <option value="$750,000"></option>
+                          <option value="$1,000,000"></option>
+                          <option value="$2,000,000"></option>
+                          <option value="$3,000,000"></option>
+                            </datalist>
+                            </div>
+                      </div>
+
+                    <div class="mb-3 col">
+
+                        <label for="rent_min" class="form-label">Rent</label>
+                        <div class="row">
+                        <div class="col">
+                        <input list="datalistOptionsrent" class="form-control" id="rent_min" placeholder="Min"/></label>
+
+                        </div>
+                           To
+                        <div class="col">
+                           <input list="datalistOptionsrent" class="form-control" id="rent_max" placeholder="Max"/></label>
+
+                            </div>
+                            <datalist id="datalistOptionsrent">
+                          <option value="$50,000"></option>
+                          <option value="$100,000"></option>
+                          <option value="$150,000"></option>
+                          <option value="$200,000"></option>
+                          <option value="$250,000"></option>
+                          <option value="$300,000"></option>
+                          <option value="$500,000"></option>
+                          <option value="$750,000"></option>
+                          <option value="$1,000,000"></option>
+                          <option value="$2,000,000"></option>
+                          <option value="$3,000,000"></option>
+                            </datalist>
+                            </div>
+                      </div>
+                              </div>
+
+
+
+
                     <div class="row">
                     <div class="mb-3 col">
                         <label for="ebita_min" class="form-label">Ebitda</label>
@@ -324,7 +388,26 @@
                             </div>
                       </div>
                               </div>
+
                     <div class="row">
+                        <div class="mb-3 col">
+                        <label for="date-from" class="form-label">Date Range</label>
+                        <input type="datetime-local" class="form-control" id="date-from">
+                        <label for="date-to" class="form-label">To</label>
+                        <input type="datetime-local" class="form-control" id="date-to">
+                      </div>
+
+                        <div class="mb-3 col">
+                            <div class="mb-3 form-check">
+                                <label for="lease-date-from" class="form-label">Lease Expiration Date</label>
+                        <input type="datetime-local" class="form-control" id="lease-date-from" >
+                        <label for="lease-date-to" class="form-label">To</label>
+                        <input type="datetime-local" class="form-control" id="lease-date-to">
+                            </div>
+                    </div>
+
+                        </div>
+          <div class="row">
                             <div class="mb-3 col">
                         <label for="retire_reason" class="form-label">Reason of Selling</label>
                         <input type="text" class="form-control" id="retire_reason">
@@ -335,16 +418,22 @@
                         <input type="number" class="form-control" id="age_of_business">
                       </div>
                     </div>
-
-                    <div class="row">
-                        <div class="mb-3 col">
-                        <label for="date-from" class="form-label">Date Range</label>
-                        <input type="datetime-local" class="form-control" id="date-from" aria-describedby="emailHelp">
-                        <label for="date-to" class="form-label">To</label>
-                        <input type="datetime-local" class="form-control" id="date-to" aria-describedby="emailHelp">
-                      </div>
-                        <div class="mb-3 col">
-                      <div class="mb-3 form-check">
+          <div class="row">
+              <div class="mb-3 col">
+        <label for="listings" class="form-label">Listing Type</label>
+                        <select class="form-control" id="listings" name="listings" aria-label="Default select example">
+                          <option value = ""  disabled selected="selected">Choose Listing Type</option>
+                            {% for category in listing_type%}
+                          {% for key,value in category.items%}
+                          {% if value%}
+                            <option value = "{{value}}">{{value}}</option>
+                            {% endif %}
+                            {% endfor %}
+                            {% endfor %}
+                        </select>
+    </div>
+              <div class="mb-3 col">
+                   <div class="mb-3 form-check">
                         <input type="checkbox" class="form-check-input" id="InventoryIncluded">
                         <label class="form-check-label" for="InventoryIncluded">Inventory Included</label>
                       </div>
@@ -352,10 +441,8 @@
                         <input type="checkbox" class="form-check-input" id="RSIncluded">
                         <label class="form-check-label" for="RSIncluded">Real Estate Included</label>
                       </div>
-
-                    </div>
-
-                        </div>
+              </div>
+          </div>
 
       </div>
     </div>
@@ -439,7 +526,7 @@ $("#tags2").html(`<p><span style="font-size:18px"> Filters Applied:</span></p>`)
 inputs = ['gross_min','gross_max','cash_min','cash_max','ebita_min',
     'ebita_max','No_Emp_min','No_Emp_max','askingprice_min','askingprice_max',
     'building_area_min','building_area_max','retire_reason','age_of_business',
-    'buz_category','query']
+    'buz_category','query','inventory_price_gte','inventory_price_lte','lease-date-to','lease-date-from','rent_min','rent_max']
     for (i = 0; i < inputs.length; i++) {
     name="#"+inputs[i]
     $(name).val('');
@@ -454,7 +541,8 @@ var save_searches = {}
 function get_inputs(){
     inputs = ['buz_category','gross_min','gross_max','cash_min','cash_max','ebita_min',
     'ebita_max','No_Emp_min','No_Emp_max','askingprice_min','askingprice_max',
-    'building_area_min','building_area_max','retire_reason','age_of_business','date-from','date-to','query'
+    'building_area_min','building_area_max','retire_reason','age_of_business','date-from','date-to','query',
+    'inventory_price_gte','inventory_price_lte','lease-date-to','lease-date-from','rent_min','rent_max','listings'
     ]
     const titles =
     {
@@ -478,6 +566,13 @@ function get_inputs(){
     'age_of_business' : 'Age of Business: ',
     'date-from':'Date Range From: ',
     'date-to':'Date Range to: ',
+    'inventory_price_gte': 'Inventory Price(Min): ',
+    'inventory_price_Lte': 'Inventory Price(Max): ',
+    'lease-date-to': 'Lease Expiration Date To: ',
+    'lease-date-from': 'Lease Expiration Date From: ',
+    'rent_min': 'Rent (Min): ',
+    'rent_max': 'Rent (Max): ',
+    'listings':'Listing Type'
     };
     $("#tags2").html("");
     $("#tags2").html(`<p><span style="font-size:18px"> Filters Applied:</span><a type="button" style='float:right;color: red;' onclick='clear_all_filters();'><i class="fas fa-trash"></i> Clear All</a></p>`);

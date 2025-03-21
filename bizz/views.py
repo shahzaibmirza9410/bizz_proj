@@ -34,7 +34,12 @@ data_filters = {"gross_min": "gross_revenue__gte", "gross_max": "gross_revenue__
                 'age_of_business': 'age_years__lte',
                 'RSIncluded': 'real_estate', 'InventoryIncluded': 'inventory', 'date-from': 'first_scraped_time__gte',
                 'date-to': 'first_scraped_time__lte',
-                'buz_category': 'category', 'query': 'address__icontains'}
+                'buz_category': 'category', 'query': 'address__icontains',
+                'inventory_price_gte': 'inventory_price__gte','inventory_price_lte':'inventory_price__lte',
+                'rent_min': 'rent__gte','rent_max':'rent__lte',
+                'lease-date-to':'lease_expiration_date__lte','lease-date-from':'lease_expiration_date__gte',
+                'listings':'listing_type'
+                }
 
 states_dic = {'ak': 'Alaska', 'al': 'Alabama', 'ar': 'Arkansas', 'as': 'American Samoa', 'az': 'Arizona',
               'ca': 'California', 'co': 'Colorado', 'ct': 'Connecticut', 'dc': 'District of Columbia',
@@ -79,6 +84,8 @@ def view_list(request, pk):
             states = Scraped_data.objects.order_by().values_list('state', flat=True).distinct()
             counties = Scraped_data.objects.order_by().values_list('county', flat=True).distinct()
             categories = Scraped_data.objects.order_by().values('category').distinct()
+
+            listing_type = Scraped_data.objects.order_by().values('listing_type').distinct()
             s = list(states)
             c = list(counties)
             for idx, state in enumerate(s):
@@ -86,6 +93,7 @@ def view_list(request, pk):
                     s[idx] = states_dic[state.lower()]
             context['locations'] = s + c
             context['categories'] = categories
+            context['listing_type'] = listing_type
             context['filters'] = filters
             print(f"sending list: {my_list}")
             request.session['filters'] = filters
@@ -97,6 +105,7 @@ def record_view(request):
     states = Scraped_data.objects.order_by().values_list('state', flat=True).distinct()
     counties = Scraped_data.objects.order_by().values_list('county', flat=True).distinct()
     categories = Scraped_data.objects.order_by().values('category').distinct()
+    listing_type = Scraped_data.objects.order_by().values('listing_type').distinct()
     s = list(states)
     c = list(counties)
     for idx, state in enumerate(s):
@@ -104,6 +113,7 @@ def record_view(request):
             s[idx] = states_dic[state.lower()]
     context['locations'] = s + c
     context['categories'] = categories
+    context['listing_type'] = listing_type
     res = Scraped_data.objects.all()
     res = res.values('title', 'address',
                      'asking_price',
@@ -359,90 +369,92 @@ def get_records(request):
 
 
 def get_rows(filters, sorted):
-    res = ''
     my_filters = {}
+    filters_applied = {}
     if filters:
         filters_applied = json.loads(filters)
 
-        for key, val in filters_applied.items():
-            if key in ['query', 'gross_min', 'gross_max', 'cash_min', 'cash_max', "ebita_min",
-                       "ebita_max", "No_Emp_min", "No_Emp_max", "age_of_business",
-                       "askingprice_min", 'askingprice_max', 'building_area_min', 'building_area_max',
-                       'retire_reason', 'InventoryIncluded', 'RSIncluded', 'date-from', 'date-to', 'buz_category']:
-                if val:
-                    print(key)
-                    if key == 'age_of_business':
-                        val = int(val)
-                        my_filters[f'{data_filters[key]}'] = val
+    for key, val in filters_applied.items():
+        if key in ['query', 'gross_min', 'gross_max', 'cash_min', 'cash_max', "ebita_min",
+                   "ebita_max", "No_Emp_min", "No_Emp_max", "age_of_business",
+                   "askingprice_min", 'askingprice_max', 'building_area_min', 'building_area_max',
+                   'retire_reason', 'InventoryIncluded', 'RSIncluded', 'date-from', 'date-to', 'buz_category',
+                   'inventory_price_gte','inventory_price_lte','lease-date-to','lease-date-from','rent_min','rent_max','listings']:
+            if val:
+                print(key)
+                if key == 'age_of_business':
+                    val = int(val)
+                    my_filters[f'{data_filters[key]}'] = val
 
-                    elif key in ['gross_min', 'gross_max', 'cash_min', 'cash_max', "ebita_min",
-                                 "ebita_max", "No_Emp_min", "No_Emp_max",
-                                 "askingprice_min", 'askingprice_max', 'building_area_min', 'building_area_max']:
+                elif key in ['gross_min', 'gross_max', 'cash_min', 'cash_max', "ebita_min",
+                             "ebita_max", "No_Emp_min", "No_Emp_max",
+                             "askingprice_min", 'askingprice_max', 'building_area_min', 'building_area_max'
+                    ,'inventory_price_gte','inventory_price_lte','rent_min','rent_max']:
 
-                        for char in [',', '$']:
-                            val = val.replace(char, '')
-                        val = int(val)
-                        my_filters[f'{data_filters[key]}'] = val
+                    for char in [',', '$']:
+                        val = val.replace(char, '')
+                    val = int(val)
+                    my_filters[f'{data_filters[key]}'] = val
 
-                    elif key in ['query']:
-                        if val in states_dic.values():
-                            for k, v in states_dic.items():
-                                if v == val:
-                                    val = k
-                            my_filters['state__icontains'] = val
-                        else:
-                            my_filters['address__icontains'] = val
+                elif key in ['query']:
+                    if val in states_dic.values():
+                        for k, v in states_dic.items():
+                            if v == val:
+                                val = k
+                        my_filters['state__icontains'] = val
                     else:
-                        my_filters[f'{data_filters[key]}'] = val
-        print(f"myflters: {my_filters}")
-        keywords = filters_applied.get('keywords', '')
-        if my_filters:
-            res = Scraped_data.objects.filter(**my_filters)
-            if keywords:
-                for keyword in keywords:
+                        my_filters['address__icontains'] = val
+                else:
+                    my_filters[f'{data_filters[key]}'] = val
+    print(f"myflters: {my_filters}")
+    keywords = filters_applied.get('keywords', '')
+    if my_filters:
+        res = Scraped_data.objects.filter(**my_filters)
+        if keywords:
+            for keyword in keywords:
+                res = res.filter(
+                    Q(title__icontains=keyword) | Q(description__icontains=keyword) | Q(
+                        facilities__icontains=keyword)
+                    | Q(competition__icontains=keyword)
+                )
+    else:
+        if keywords:
+            res = ''
+            for keyword in keywords:
+                if res:
                     res = res.filter(
                         Q(title__icontains=keyword) | Q(description__icontains=keyword) | Q(
                             facilities__icontains=keyword)
                         | Q(competition__icontains=keyword)
                     )
+                else:
+                    res = Scraped_data.objects.filter(
+                        Q(title__icontains=keyword) | Q(description__icontains=keyword) | Q(
+                            facilities__icontains=keyword)
+                        | Q(competition__icontains=keyword)
+                    )
         else:
-            if keywords:
-                res = ''
-                for keyword in keywords:
-                    if res:
-                        res = res.filter(
-                            Q(title__icontains=keyword) | Q(description__icontains=keyword) | Q(
-                                facilities__icontains=keyword)
-                            | Q(competition__icontains=keyword)
-                        )
-                    else:
-                        res = Scraped_data.objects.filter(
-                            Q(title__icontains=keyword) | Q(description__icontains=keyword) | Q(
-                                facilities__icontains=keyword)
-                            | Q(competition__icontains=keyword)
-                        )
-            else:
-                print("in else getting all")
-                res = Scraped_data.objects.all()
-        if sorted:
-            res = res.values_list('title', 'address',
-                                  'asking_price',
-                                  'gross_revenue', 'ebitda', 'state', 'county', 'inventory', 'real_estate', 'established',
-                                  'building_sf', 'employees',
-                                  'reason_for_selling', 'age_years', 'description', 'cash_flow', 'facilities',
-                                  'competition',
-                                  'real_estate_from_detail', 'furniture_fixture_equipment', 'franchise', 'business_website',
-                                  'detail_url', 'category', 'cash_flow_multiple')
-        else:
-            res = res.values('title', 'address',
-                             'asking_price',
-                             'gross_revenue', 'ebitda', 'cash_flow',
-                             'established', 'state','age_years', 'county', 'inventory', 'real_estate', 'established', 'description',
-                             'building_sf', 'employees',
-                             'reason_for_selling', 'real_estate_from_detail', 'furniture_fixture_equipment',
-                             'facilities', 'competition',
-                             'franchise', 'business_website', 'scraped_time', 'detail_url', 'category',
-                             'cash_flow_multiple','scraped_time')
+            print("in else getting all")
+            res = Scraped_data.objects.all()[:2000]
+    if sorted:
+        res = res.values_list('title', 'address',
+                              'asking_price',
+                              'gross_revenue', 'ebitda', 'state', 'county', 'inventory', 'real_estate', 'established',
+                              'building_sf', 'employees',
+                              'reason_for_selling', 'age_years', 'description', 'cash_flow', 'facilities',
+                              'competition',
+                              'real_estate_from_detail', 'furniture_fixture_equipment', 'franchise', 'business_website',
+                              'detail_url', 'category', 'cash_flow_multiple','rent','inventory_price','listing_type')
+    else:
+        res = res.values('title', 'address',
+                         'asking_price',
+                         'gross_revenue', 'ebitda', 'cash_flow',
+                         'established', 'state','age_years', 'county', 'inventory', 'real_estate', 'established', 'description',
+                         'building_sf', 'employees',
+                         'reason_for_selling', 'real_estate_from_detail', 'furniture_fixture_equipment',
+                         'facilities', 'competition',
+                         'franchise', 'business_website', 'scraped_time', 'detail_url', 'category',
+                         'cash_flow_multiple','scraped_time','rent','lease_expiration_date','inventory_price','listing_type')
     return res
 
 
@@ -450,7 +462,7 @@ def create_download_file(request):
     filters = request.session.get('filters')
     rows = get_rows(filters,True)
     response = HttpResponse(content_type='application/ms-excel')
-    filename = 'DrupsInvesting File.csv'
+    filename = 'DrupsInvesting File.xlsx'
     response['Content-Disposition'] = 'attachment; filename={}'.format(filename)
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('report')
@@ -462,7 +474,7 @@ def create_download_file(request):
                'Inventory', 'Real Estate', 'Established', 'Building Area(sf)', 'Employees',
                'Reason for selling', 'Age of Business', 'Description','Cash flow','Category','Competition',
                'Real Estate From Detail', 'Furniture Fixture Equipment', 'Franchise', 'Business Website',
-               'Detail Url', 'Category', 'Cash Flow Multiple'
+               'Detail Url', 'Category', 'Cash Flow Multiple','Rent','Inventory Price','Listing Type'
                ]
     for col_num in range(len(columns)):
         ws.write(row_num, col_num, columns[col_num], font_style)
